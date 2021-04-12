@@ -1,0 +1,541 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- saved from url=(0039)http://www.zskblog.com/detay.aspx?id=33 -->
+<html xmlns="http://www.w3.org/1999/xhtml" class=" chrome-clearly-theme-default"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://feeds.feedburner.com/zskblog"><meta name="blogcatalog" content="9BC9589910"><title>
+	Mysql veritabanında FullText Index ile arama yapmak 
+</title><link href="./Mysql veritabanında FullText Index ile arama yapmak_files/menu.css" rel="stylesheet" type="text/css"><link rel="stylesheet" href="./Mysql veritabanında FullText Index ile arama yapmak_files/default.css" type="text/css">
+    <script async="" src="./Mysql veritabanında FullText Index ile arama yapmak_files/async-ads.js.indir"></script><script src="./Mysql veritabanında FullText Index ile arama yapmak_files/cb=gapi.loaded_1" async=""></script><script src="./Mysql veritabanında FullText Index ile arama yapmak_files/cb=gapi(1).loaded_0" async=""></script><script type="text/javascript" async="" src="./Mysql veritabanında FullText Index ile arama yapmak_files/ga.js.indir"></script><script type="text/javascript" async="" src="./Mysql veritabanında FullText Index ile arama yapmak_files/plusone.js.indir" gapi_processed="true"></script><script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/shCore.js.indir"></script>
+	<script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/shBrushCSharp.js.indir"></script>
+	<script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/shBrushPlain.js.indir"></script>
+	<script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/shBrushJava.js.indir"></script>
+	<script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/shBrushCss.js.indir"></script>
+	<script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/shBrushJScript.js.indir"></script>
+	<script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/shBrushXml.js.indir"></script>
+	<script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/shBrushPhp.js.indir"></script>
+	<script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/shBrushSql.js.indir"></script>
+	<link type="text/css" rel="stylesheet" href="./Mysql veritabanında FullText Index ile arama yapmak_files/shCore.css">
+	  <script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/jquery-1.3.2.min.js.indir"></script>
+	  <script src="./Mysql veritabanında FullText Index ile arama yapmak_files/jquery.history_remote.pack.js.indir" type="text/javascript"></script>
+      <script src="./Mysql veritabanında FullText Index ile arama yapmak_files/jquery.tabs.pack.js.indir" type="text/javascript"></script>
+ <link rel="stylesheet" href="./Mysql veritabanında FullText Index ile arama yapmak_files/jquery.tabs.css" type="text/css" media="print, projection, screen">
+  <script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/tabs.js.indir"></script>  
+<link type="text/css" rel="stylesheet" href="./Mysql veritabanında FullText Index ile arama yapmak_files/shThemeDefault.css">
+<style type="text/css">
+  .gsc-control-cse {
+    font-family: Arial, sans-serif;
+    border-color: #FFFFFF;
+    background-color: #FFFFFF;
+  }
+  input.gsc-input {
+    border-color: #BCCDF0;
+    	width:110px;
+  }
+  input.gsc-search-button {
+	
+	border: 1px solid #EBEBEB;
+	border-bottom-color: #DDDDDD;
+
+	background: #FBFBFB url(images/img7.gif) repeat-x;
+	text-transform: lowercase;
+	font-size: 12px;
+	color: #7A7A7A;
+font-family:"Trebuchet MS",Arial,Helvetica,sans-serif;
+  }
+  .gsc-tabHeader.gsc-tabhInactive {
+    border-color: #E9E9E9;
+    background-color: #E9E9E9;
+  }
+  .gsc-tabHeader.gsc-tabhActive {
+    border-top-color: #cccccc;
+    border-left-color: #E9E9E9;
+    border-right-color: #E9E9E9;
+    background-color: #FFFFFF;
+  }
+  .gsc-tabsArea {
+    border-color: #E9E9E9;
+  }
+  .gsc-webResult.gsc-result {
+    border-color: #FFFFFF;
+    background-color: #FFFFFF;
+  }
+  .gsc-webResult.gsc-result:hover {
+    border-color: #FFFFFF;
+    background-color: #FFFFFF;
+  }
+  .gs-webResult.gs-result a.gs-title:link,
+  .gs-webResult.gs-result a.gs-title:link b {
+    color: #69a0bc;
+  }
+  .gs-webResult.gs-result a.gs-title:visited,
+  .gs-webResult.gs-result a.gs-title:visited b {
+    color: #3366ff;
+  }
+  .gs-webResult.gs-result a.gs-title:hover,
+  .gs-webResult.gs-result a.gs-title:hover b {
+    color: #29aebc;
+  }
+  .gs-webResult.gs-result a.gs-title:active,
+  .gs-webResult.gs-result a.gs-title:active b {
+    color: #69a0bc;
+  }
+  .gsc-cursor-page {
+    color: #69a0bc;
+  }
+  a.gsc-trailing-more-results:link {
+    color: #69a0bc;
+  }
+  .gs-webResult.gs-result .gs-snippet {
+    color: #666666;
+  }
+  .gs-webResult.gs-result .gs-visibleUrl {
+    color: #cccccc;
+  }
+  .gs-webResult.gs-result .gs-visibleUrl-short {
+    color: #cccccc;
+  }
+  .gsc-cursor-box {
+    border-color: #FFFFFF;
+  }
+  .gsc-results .gsc-cursor-page {
+    border-color: #E9E9E9;
+    background-color: #FFFFFF;
+  }
+  .gsc-results .gsc-cursor-page.gsc-cursor-current-page {
+    border-color: #cccccc;
+    background-color: #FFFFFF;
+  }
+  .gs-promotion.gs-result {
+    border-color: #336699;
+    background-color: #FFFFFF;
+  }
+  .gs-promotion.gs-result a.gs-title:link {
+    color: #0000CC;
+  }
+  .gs-promotion.gs-result a.gs-title:visited {
+    color: #0000CC;
+  }
+  .gs-promotion.gs-result a.gs-title:hover {
+    color: #0000CC;
+  }
+  .gs-promotion.gs-result a.gs-title:active {
+    color: #0000CC;
+  }
+  .gs-promotion.gs-result .gs-snippet {
+    color: #000000;
+  }
+  .gs-promotion.gs-result .gs-visibleUrl,
+  .gs-promotion.gs-result .gs-visibleUrl-short {
+    color: #008000;
+  }
+</style>
+	<script type="text/javascript">
+
+		SyntaxHighlighter.config.clipboardSwf = 'scripts/clipboard.swf';
+		SyntaxHighlighter.all();
+		$(document).ready(function() {
+		$("#container .menu > li").click(function(e) {
+		        switch (e.target.id) {
+		            case "Kategoriler":
+		                //change status  style menu
+		                $("#Kategoriler").addClass("active");
+		                $("#Arsiv").removeClass("active");
+		                $("#Yazilar").removeClass("active");
+		                //display selected division, hide others
+		                $("div.Kategoriler").fadeIn();
+		                $("div.Arsiv").css("display", "none");
+		                $("div.Yazilar").css("display", "none");
+		                break;
+		            case "Arsiv":
+		                //change status  style menu
+		                $("#Kategoriler").removeClass("active");
+		                $("#Arsiv").addClass("active");
+		                $("#Yazilar").removeClass("active");
+		                //display selected division, hide others
+		                $("div.Arsiv").fadeIn();
+		                $("div.Kategoriler").css("display", "none");
+		                $("div.Yazilar").css("display", "none");
+		                break;
+		            case "Yazilar":
+		                //change status  style menu
+		                $("#Kategoriler").removeClass("active");
+		                $("#Arsiv").removeClass("active");
+		                $("#Yazilar").addClass("active");
+		                //display selected division, hide others
+		                $("div.Yazilar").fadeIn();
+		                $("div.Kategoriler").css("display", "none");
+		                $("div.Arsiv").css("display", "none");
+		                break;
+		        }
+		        //alert(e.target.id);
+		        return false;
+		    });
+		});
+
+	</script>
+	
+     
+
+	
+
+    
+    
+   
+    
+
+
+<script type="text/javascript" src="./Mysql veritabanında FullText Index ile arama yapmak_files/hakkimda.js.indir">
+
+
+</script>
+
+<meta name="description" content="zülküf küçüközer zskblog Web Günlüğü Mysql veritabanında FullText Index ile arama yapmak "><meta name="keywords" content="zskblog.com zskblog zülküf küçüközer MYSQL VERİTABANI FULLTEX İNDEX  ARAMA YAPMAK  "><style type="text/css">.gscb_a{display:inline-block;font:27px/13px arial,sans-serif}.gsst_a .gscb_a{color:#a1b9ed;cursor:pointer}.gsst_a:hover .gscb_a,.gsst_a:focus .gscb_a{color:#36c}.gsst_a{display:inline-block}.gsst_a{cursor:pointer;padding:0 4px}.gsst_a:hover{text-decoration:none!important}.gsst_b{font-size:16px;padding:0 2px;position:relative;user-select:none;-webkit-user-select:none;white-space:nowrap}.gsst_e{opacity:0.55;}.gsst_a:hover .gsst_e,.gsst_a:focus .gsst_e{opacity:0.72;}.gsst_a:active .gsst_e{opacity:1;}.gsst_f{background:white;text-align:left}.gsst_g{background-color:white;border:1px solid #ccc;border-top-color:#d9d9d9;box-shadow:0 2px 4px rgba(0,0,0,0.2);-webkit-box-shadow:0 2px 4px rgba(0,0,0,0.2);margin:-1px -3px;padding:0 6px}.gsst_h{background-color:white;height:1px;margin-bottom:-1px;position:relative;top:-1px}.gsib_a{width:100%;padding:4px 6px 0}.gsib_a,.gsib_b{vertical-align:top}.gssb_c{border:0;position:absolute;z-index:989}.gssb_e{border:1px solid #ccc;border-top-color:#d9d9d9;box-shadow:0 2px 4px rgba(0,0,0,0.2);-webkit-box-shadow:0 2px 4px rgba(0,0,0,0.2);cursor:default}.gssb_f{visibility:hidden;white-space:nowrap}.gssb_k{border:0;display:block;position:absolute;top:0;z-index:988}.gsdd_a{border:none!important}.gsq_a{padding:0}.gscsep_a{display:none}.gssb_a{padding:0 7px}.gssb_a,.gssb_a td{white-space:nowrap;overflow:hidden;line-height:22px}#gssb_b{font-size:11px;color:#36c;text-decoration:none}#gssb_b:hover{font-size:11px;color:#36c;text-decoration:underline}.gssb_g{text-align:center;padding:8px 0 7px;position:relative}.gssb_h{font-size:15px;height:28px;margin:0.2em;-webkit-appearance:button}.gssb_i{background:#eee}.gss_ifl{visibility:hidden;padding-left:5px}.gssb_i .gss_ifl{visibility:visible}a.gssb_j{font-size:13px;color:#36c;text-decoration:none;line-height:100%}a.gssb_j:hover{text-decoration:underline}.gssb_l{height:1px;background-color:#e5e5e5}.gssb_m{color:#000;background:#fff}.gsfe_a{border:1px solid #b9b9b9;border-top-color:#a0a0a0;box-shadow:inset 0px 1px 2px rgba(0,0,0,0.1);-moz-box-shadow:inset 0px 1px 2px rgba(0,0,0,0.1);-webkit-box-shadow:inset 0px 1px 2px rgba(0,0,0,0.1);}.gsfe_b{border:1px solid #4d90fe;outline:none;box-shadow:inset 0px 1px 2px rgba(0,0,0,0.3);-moz-box-shadow:inset 0px 1px 2px rgba(0,0,0,0.3);-webkit-box-shadow:inset 0px 1px 2px rgba(0,0,0,0.3);}.gssb_a{padding:0 7px}.gssb_e{border:0}.gssb_l{margin:5px 0}input.gsc-input::-webkit-input-placeholder{font-size:14px}input.gsc-input:-moz-placeholder{font-size:14px}input.gsc-input::-moz-placeholder{font-size:14px}input.gsc-input:-ms-input-placeholder{font-size:14px}input.gsc-input:focus::-webkit-input-placeholder{color:transparent}input.gsc-input:focus:-moz-placeholder{color:transparent}input.gsc-input:focus::-moz-placeholder{color:transparent}input.gsc-input:focus:-ms-input-placeholder{color:transparent}.gssb_c .gsc-completion-container{position:static}.gssb_c{z-index:5000}.gsc-completion-container table{background:transparent;font-size:inherit;font-family:inherit}.gssb_c > tbody > tr,.gssb_c > tbody > tr > td,.gssb_d,.gssb_d > tbody > tr,.gssb_d > tbody > tr > td,.gssb_e,.gssb_e > tbody > tr,.gssb_e > tbody > tr > td{padding:0;margin:0;border:0}.gssb_a table,.gssb_a table tr,.gssb_a table tr td{padding:0;margin:0;border:0}</style></head>
+<body>
+<div id="header">
+	<div id="logo">
+		<h1 class="bas"><span><a href="http://www.zskblog.com/">Web Günlüğü </a></span></h1>
+		<h2><a href="http://www.zskblog.com/">By Zülküf Küçüközer</a></h2>
+	</div>
+	<div id="menu">
+		<ul>
+			<li class="first"><a title="anasayfa" href="http://www.zskblog.com/Default.aspx" rel="cm1">Anasayfa</a></li>
+            <li><a title="hakkımda" onclick="hakkimda();" href="http://www.zskblog.com/detay.aspx?id=33#">Hakkımda </a></li>
+    
+		</ul>
+	</div>
+</div>
+<div id="splash"><a href="http://www.zskblog.com/detay.aspx?id=33#"><img class="ss" src="./Mysql veritabanında FullText Index ile arama yapmak_files/img4.jpg" alt="" width="877" height="140"></a></div>
+<div id="content">
+	<div id="colOne">
+		
+        <div id="icerik">
+          <table id="ContentPlaceHolder1_Table1" cellspacing="0" style="border-collapse:collapse;">
+	<tbody><tr>
+		<td align="left" style="max-width:620px;padding:6px;"> <h2 class="detaybas">Mysql veritabanında FullText Index ile arama yapmak </h2></td>
+	</tr><tr>
+		<td style="padding:6px;padding-bottom:35px;max-width:620px;">
+<b>Mysql veritabanında FullText Index ile arama yapmanın</b> birkaç avantajı var; biri performans diğeri de
+ayıraclar ile detaylı arama yapabilmek.Detaylara geçelim:<br><br>
+Bildiğimiz veri <b>indexlemenin</b> bir başka çeşidi olan  <b>Fulltext index </b>sayesinde <em>LIKE</em> komutu ile aramanın
+yavaşlığından kurtulabiliyoruz. Özellikle yüzbinlerce satırlık veriler arasında <em>LIKE</em> komutuyla kelime
+<b>araması yapmak</b> büyük performans kaybına yol açar. 
+<br><br>
+<b>FullText Index</b> sadece text alanları için kullanılabilir. Ayrıca <b>FullText Index</b> kullanabilmek için
+tablo formatının <em>MyIsam</em> olması zorunludur ki bu format zaten<b> Mysql veritabanın</b> standart formatıdır.
+<br><br>    
+Şimdi <b>Fulltext Index</b> kullancağımız tabloyu oluşturalım: 
+
+ <div id="highlighter_521455" class="syntaxhighlighter  "><div class="bar  "><div class="toolbar"><a href="http://www.zskblog.com/detay.aspx?id=33#viewSource" title="view source" class="item viewSource" style="width: 16px; height: 16px;">view source</a><div class="item copyToClipboard"><embed width="16" height="16" id="highlighter_521455_clipboard" type="application/x-shockwave-flash" title="copy to clipboard" allowscriptaccess="always" wmode="transparent" flashvars="highlighterId=highlighter_521455" menu="false" src="scripts/clipboard.swf"></div><a href="http://www.zskblog.com/detay.aspx?id=33#printSource" title="print" class="item printSource" style="width: 16px; height: 16px;">print</a><a href="http://www.zskblog.com/detay.aspx?id=33#about" title="?" class="item about" style="width: 16px; height: 16px;">?</a></div></div><div class="lines"><div class="line alt1"><table><tbody><tr><td class="number"><code>1</code></td><td class="content"><code class="keyword">CREATE</code> <code class="keyword">TABLE</code> <code class="plain">IF </code><code class="color1">NOT</code> <code class="plain">EXISTS `yazilar` (</code></td></tr></tbody></table></div><div class="line alt2"><table><tbody><tr><td class="number"><code>2</code></td><td class="content"><code class="spaces">&nbsp;&nbsp;</code><code class="plain">`id` </code><code class="keyword">int</code><code class="plain">(11) </code><code class="color1">NOT</code> <code class="color1">NULL</code> <code class="plain">AUTO_INCREMENT,</code></td></tr></tbody></table></div><div class="line alt1"><table><tbody><tr><td class="number"><code>3</code></td><td class="content"><code class="spaces">&nbsp;&nbsp;</code><code class="plain">`baslik` </code><code class="keyword">varchar</code><code class="plain">(50) </code><code class="keyword">COLLATE</code> <code class="plain">utf8_bin </code><code class="color1">NOT</code> <code class="color1">NULL</code><code class="plain">,</code></td></tr></tbody></table></div><div class="line alt2"><table><tbody><tr><td class="number"><code>4</code></td><td class="content"><code class="spaces">&nbsp;&nbsp;</code><code class="plain">`yazi` text </code><code class="keyword">COLLATE</code> <code class="plain">utf8_bin </code><code class="color1">NOT</code> <code class="color1">NULL</code><code class="plain">,</code></td></tr></tbody></table></div><div class="line alt1"><table><tbody><tr><td class="number"><code>5</code></td><td class="content"><code class="spaces">&nbsp;&nbsp;</code><code class="keyword">PRIMARY</code> <code class="keyword">KEY</code> <code class="plain">(`id`),</code></td></tr></tbody></table></div><div class="line alt2"><table><tbody><tr><td class="number"><code>6</code></td><td class="content"><code class="spaces">&nbsp;&nbsp;</code><code class="plain">FULLTEXT </code><code class="keyword">KEY</code> <code class="plain">`baslik` (`baslik`,`yazi`)</code></td></tr></tbody></table></div><div class="line alt1"><table><tbody><tr><td class="number"><code>7</code></td><td class="content"><code class="plain">) ENGINE=MyISAM </code><code class="keyword">DEFAULT</code> <code class="plain">CHARSET=utf8 </code><code class="keyword">COLLATE</code><code class="plain">=utf8_bin;</code></td></tr></tbody></table></div></div></div>
+Yukarıdaki yazilar tablosunda html kodu içermeyen yazilarin olduğunu varsayarak (varsa
+bunun için ayrı tablo oluşturmamız ve saf metni girmek gerekiyor) <b>arama</b> yapalım:
+<br>
+ <div id="highlighter_141180" class="syntaxhighlighter  "><div class="bar      "><div class="toolbar"><a href="http://www.zskblog.com/detay.aspx?id=33#viewSource" title="view source" class="item viewSource" style="width: 16px; height: 16px;">view source</a><div class="item copyToClipboard"><embed width="16" height="16" id="highlighter_141180_clipboard" type="application/x-shockwave-flash" title="copy to clipboard" allowscriptaccess="always" wmode="transparent" flashvars="highlighterId=highlighter_141180" menu="false" src="scripts/clipboard.swf"></div><a href="http://www.zskblog.com/detay.aspx?id=33#printSource" title="print" class="item printSource" style="width: 16px; height: 16px;">print</a><a href="http://www.zskblog.com/detay.aspx?id=33#about" title="?" class="item about" style="width: 16px; height: 16px;">?</a></div></div><div class="lines"><div class="line alt1"><table><tbody><tr><td class="number"><code>1</code></td><td class="content"><code class="keyword">SELECT</code> <code class="plain">* </code><code class="keyword">FROM</code> <code class="plain">`yazilar` </code><code class="keyword">WHERE</code> <code class="plain">MATCH(baslik,yazi) AGAINST (`aranan_kelime` </code><code class="color1">IN</code> <code class="plain">BOOLEAN MODE);</code></td></tr></tbody></table></div></div></div>
+<em>MATCH </em>parantezleri arasına aranacak <b>FullText indexli</b> sütünları yazıyoruz ve <em>AGAINST</em> parantezlerine
+sırasıyla aranan kelimeyi ve birden çok sonuç döndürebilmesini sağlayan <em>BOOLEN MODE</em> komutunu yazıyoruz.
+Sorguyu çalıştırdığımızda baslik ve yazi sütunlarında bu şekilde <b>FullText arama</b> yapabiliyoruz.
+
+<br><br> <em>AGAINST</em> komutunu ile aşağıdaki ayıraçları kullanarak googledakine benzer bir
+şekilde <b>arama</b> yabiliriz.<br> <br> <center>
+<table style="border:1px solid gray;" width="500px">
+ <tbody><tr style="color:blue;">
+   <td>Seperator</td><td>İşlevi</td>
+ </tr>
+  <tr>
+   <td>+</td><td>birden fazla kelimeyi aramak için kullanılır </td>
+ </tr>
+  <tr>
+   <td>-</td><td>önüne konan kelimeyi eleyerek arama yapar</td>
+ </tr>
+  <tr>
+   <td></td><td> Aranan kelimelerin benzerlik oranını ölçer </td>
+ </tr>
+  <tr>
+   <td> ( ) </td><td> Kelime alt gruplarına göre arama yapar</td>
+ </tr>
+   <tr>
+   <td> ~ </td><td> Benzeşme oranı negatif olanları eleyerek arama yapar</td>
+ </tr>
+   <tr>
+   <td> * </td><td> örnek: AGAINST ( `web*` ) ; web ile başlayan kelimeleri getirir </td>
+ </tr>
+    <tr>
+   <td> " " </td><td> bire bir uyanları arar. Küçük büyük harf duyarsızdır </td>
+ </tr>
+</tbody></table></center>
+<br>
+Not: <b>MySql FullText Index</b> kullanılan sütunlarda en az 4 karakterli olanları <b>indexler</b>. Bu yüzden
+4'den az karakterli kelimeler için aramalar boş döner. Bunu <b>Mysql veritabanında</b> aşağıdaki komutla
+değiştirebilirsiniz:
+
+ <div id="highlighter_214415" class="syntaxhighlighter  "><div class="bar "><div class="toolbar"><a href="http://www.zskblog.com/detay.aspx?id=33#viewSource" title="view source" class="item viewSource" style="width: 16px; height: 16px;">view source</a><div class="item copyToClipboard"><embed width="16" height="16" id="highlighter_214415_clipboard" type="application/x-shockwave-flash" title="copy to clipboard" allowscriptaccess="always" wmode="transparent" flashvars="highlighterId=highlighter_214415" menu="false" src="scripts/clipboard.swf"></div><a href="http://www.zskblog.com/detay.aspx?id=33#printSource" title="print" class="item printSource" style="width: 16px; height: 16px;">print</a><a href="http://www.zskblog.com/detay.aspx?id=33#about" title="?" class="item about" style="width: 16px; height: 16px;">?</a></div></div><div class="lines"><div class="line alt1"><table><tbody><tr><td class="number"><code>1</code></td><td class="content"><code class="keyword">SET</code> <code class="keyword">GLOBAL</code> <code class="plain">ft_min_word_len= 4; </code><code class="comments">-- 4 yerine istediğiniz değeri yazabilirsiniz</code></td></tr></tbody></table></div><div class="line alt2"><table><tbody><tr><td class="number"><code>2</code></td><td class="content"><code class="keyword">SET</code> <code class="keyword">GLOBAL</code> <code class="plain">ft_max_word_len= 64;</code></td></tr></tbody></table></div></div></div></td>
+	</tr><tr>
+		<td style="border-top:1px solid #cfccef;font-size:11px;"><table cellpadding="0" cellspacing="0" style=" text-align:top; "><tbody><tr><td style=" width:400px; "><img title="yazan" alt="yazan" src="./Mysql veritabanında FullText Index ile arama yapmak_files/yazan.png"> Zülküf Küçüközer </td><td><img title="tarih" alt="tarih" src="./Mysql veritabanında FullText Index ile arama yapmak_files/date.png">  &nbsp;  31st August 2009 </td></tr><tr><td><img title="primary key words" alt="primary key words" src="./Mysql veritabanında FullText Index ile arama yapmak_files/categorya.png"> &nbsp;Mysql | Veritabanı | Fulltex index </td><td><img title="okunma" alt="okunma" src="./Mysql veritabanında FullText Index ile arama yapmak_files/okunma.png"> &nbsp;16326 </td></tr><tr><td><img title="secondary key words" alt="secondary key words" src="./Mysql veritabanında FullText Index ile arama yapmak_files/categoryb.png">  &nbsp;Arama yapmak</td><td></td></tr></tbody></table></td>
+	</tr><tr>
+		<td style="border-border:1px solid #efefef;border-top:1px solid #cfccef;"><div class="menu"> <ul> <li><a href="http://www.zskblog.com/detay.aspx?id=33##" title="yorumlar" id="yoruml"> Yorumlar</a></li> <li><a href="http://www.zskblog.com/detay.aspx?id=33##" title="yorum yaz" id="yorumyazl" style="color:#647291;"> Yorum Yaz</a></li>  </ul></div> </td>
+	</tr><tr valign="middle">
+		<td style="font-size:14px;padding:2px;"> <div id="yorum"><table width="620px;" cellspacing="0" cellpadding="0"><tbody><tr><td>Bu yazı hakkında yorum yapılmamış.</td></tr></tbody></table></div><div id="yorumyaz" style="display:none;"><form action="http://www.zskblog.com/detay.aspx?id=33#" id="yorumyazform"><table><tbody><tr><td> isim (*gerekli) :</td><td><input type="text" id="isim" name="isim"> </td></tr><tr><td> siteniz (varsa):</td><td><input type="text" name="site" id="site"></td></tr><tr><td valign="top"> yorum (*gerekli) :</td><td><textarea style="width:450px" cols="60" rows="4" name="yorumy" id="yorumy"> </textarea></td></tr><tr><td></td> <td><span id="interest_count"></span></td></tr><tr><td></td> <td><input id="aid" value="33" type="hidden"><input id="post" value="yolla" type="button">   </td></tr></tbody></table></form></div></td>
+	</tr>
+</tbody></table>
+        </div>
+
+<br>
+
+
+	</div>
+	<div id="colTwo">
+
+
+	<div id="container">
+		<ul class="menuu">
+			<li id="Kategoriler" class="active">Kategoriler</li>
+			<li id="Arsiv">Arşiv</li>
+			<li id="Yazilar">Yazılar</li>	
+		</ul>
+		<span class="clear"></span>
+		<div class="content  Kategoriler">
+	        <span id="Label1"><a class="d" href="http://www.zskblog.com/kategori.aspx?cat=4" title="JAVA SE kategorisinden yazılar"> &gt; JAVA SE (1) </a> <br><a class="d" href="http://www.zskblog.com/kategori.aspx?cat=2" title="ASP.NET kategorisinden yazılar"> &gt; ASP.NET (9) </a><br> <a class="d" href="http://www.zskblog.com/kategori.aspx?cat=3" title="PHP kategorisinden yazılar"> &gt; PHP (27) </a><br> <a class="d" href="http://www.zskblog.com/kategori.aspx?cat=1" title="AJAX kategorisinden yazılar"> &gt; AJAX (9) </a><br> <a class="d" href="http://www.zskblog.com/kategori.aspx?cat=6" title="JQUERY kategorisinden yazılar"> &gt; JQUERY (13) </a><br> <a class="d" href="http://www.zskblog.com/kategori.aspx?cat=7" title="GENEL kategorisinden yazılar"> &gt; GENEL (23) </a><br></span> 
+
+		</div>
+		<div class="content  Arsiv">
+            <span id="Label7"><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=May%202013">May 2013 (1) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=July%202010">July 2010 (1) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=April%202010">April 2010 (4) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=March%202010">March 2010 (1) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=February%202010">February 2010 (3) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=December%202009">December 2009 (2) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=November%202009">November 2009 (1) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=October%202009">October 2009 (4) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=September%202009">September 2009 (16) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=August%202009">August 2009 (21) </a><br><a class="d" href="http://www.zskblog.com/Default.aspx?arsiv=July%202009">July 2009 (4) </a><br></span>
+	        
+		</div>
+		<div class="content Yazilar">
+	<span id="rasgeleyazilar"><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=29">Mysql View Kullanımı </a><br><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=49">FireFox User Agent Swi ..</a><br><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=73">Javascript'de nesne li ..</a><br><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=21">İlişkisel Veritabanı T ..</a><br><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=38">Jquery ve PHP ile Ajax ..</a><br><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=40">ASP.NET ile Google son ..</a><br><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=17">Sitenizi ziyaret edenl ..</a><br><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=57">Java Mobile 3D Oyun Pr ..</a><br><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=62">Jquery ile dinamik tab ..</a><br><a class="rasgeleyazilar" href="http://www.zskblog.com/detay.aspx?id=71">Online SMS Gateway ve  ..</a><br></span>	
+	    
+		</div>	
+		<br>
+
+		<div class="content">
+		<h3>
+		<span style="font-size:12px;
+font-weight:700;color:#898989;">Etiketler</span></h3>
+
+	   <span id="Etiketler"><span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=ado.net">Ado.net</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=asp.net">Asp.net</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=binary%20data">Binary-data</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=de%C4%9Fer">Değer</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=de%C4%9Fi%C5%9Fken">Değişken</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=delete">Delete</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=entity%20data%20model">Entity-data-model</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=fonksiyon">Fonksiyon</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=gridview">Gridview</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=ili%C5%9Fkisel%20veritaban%C4%B1">İlişkisel-veritabanı</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=insert">İnsert</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=javascript">Javascript</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=linq">Linq</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=linq-to-sql">Linq-to-sql</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=mant%C4%B1ksal%20i%C5%9Flem">Mantıksal-işlem</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=mdb2">Mdb2</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=mdb2%20mod%C3%BCl%C3%BC">Mdb2-modülü</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=mysql">Mysql</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=paket">Paket</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=pear">Pear</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=php">Php</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=prepare">Prepare</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=select">Select</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=sorgu">Sorgu</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=sunucu">Sunucu</a> <span class="delim"> | </span>  <a class="etiketa" href="http://www.zskblog.com/default.aspx?etiket=veritaban%C4%B1">Veritabanı</a> <span class="delim"> | </span> <a class="etiketb" href="http://www.zskblog.com/default.aspx?etiket=veritaban%C4%B1%20i%C5%9Flemleri">Veritabanı-işlemleri</a> <span class="delim"> | </span> </span>	
+<br><br>
+		<h3>
+		<span style="font-size:12px;
+font-weight:700;color:#898989;">arama</span></h3>
+
+	
+<div id="cse" style="width: 90%;"><div class="gsc-control-cse gsc-control-cse-tr"><div class="gsc-control-wrapper-cse" dir="ltr"><form class="gsc-search-box" accept-charset="utf-8"><table cellspacing="0" cellpadding="0" class="gsc-search-box"><tbody><tr><td class="gsc-input"><input autocomplete="off" type="text" size="10" class=" gsc-input" name="search" title="ara" id="gsc-i-id1" dir="ltr" spellcheck="false" placeholder="Özel Arama" style="outline: none; background: url(&quot;http://www.google.com/cse/static/images/1x/googlelogo_lightgrey_46x16dp.png&quot;) left center no-repeat rgb(255, 255, 255); text-indent: 48px;"></td><td class="gsc-search-button"><input type="button" value="Ara" class="gsc-search-button"></td><td class="gsc-clear-button"><div class="gsc-clear-button" title="sonuçları temizle">&nbsp;</div></td></tr></tbody></table></form><div class="gsc-results-wrapper-nooverlay"><div class="gsc-tabsAreaInvisible"><div class="gsc-tabHeader gsc-inline-block gsc-tabhActive">Özel Arama</div><span class="gs-spacer"> </span></div><div class="gsc-tabsAreaInvisible"></div><div class="gsc-above-wrapper-area-invisible"><table cellspacing="0" cellpadding="0" class="gsc-above-wrapper-area-container"><tbody><tr><td class="gsc-result-info-container"><div class="gsc-result-info-invisible"></div></td></tr></tbody></table></div><div class="gsc-adBlockInvisible"></div><div class="gsc-wrapper"><div class="gsc-adBlockInvisible"></div><div class="gsc-resultsbox-invisible"><div class="gsc-resultsRoot gsc-tabData gsc-tabdActive"><table cellspacing="0" cellpadding="0" class="gsc-resultsHeader"><tbody><tr><td class="gsc-twiddleRegionCell"><div class="gsc-twiddle"><div class="gsc-title">Web</div></div><div class="gsc-stats"></div><div class="gsc-results-selector gsc-more-results-active"><div class="gsc-result-selector gsc-one-result" title="tek bir sonuç göster">&nbsp;</div><div class="gsc-result-selector gsc-more-results" title="diğer sonuçları göster">&nbsp;</div><div class="gsc-result-selector gsc-all-results" title="tüm sonuçları göster">&nbsp;</div></div></td><td class="gsc-configLabelCell"></td></tr></tbody></table><div><div class="gsc-expansionArea"></div></div></div></div></div></div></div></div></div>
+<script src="./Mysql veritabanında FullText Index ile arama yapmak_files/jsapi" type="text/javascript"></script>
+<script type="text/javascript">
+    google.load('search', '1');
+    google.setOnLoadCallback(function() {
+        var customSearchControl = new google.search.CustomSearchControl('003679787559318325058:g4d3qkvozfa');
+        customSearchControl.setResultSetSize(google.search.Search.SMALL_RESULTSET);
+        customSearchControl.draw('cse');
+    }, true);
+</script><script src="./Mysql veritabanında FullText Index ile arama yapmak_files/saved_resource" type="text/javascript"></script><link href="./Mysql veritabanında FullText Index ile arama yapmak_files/default+tr.css" type="text/css" rel="stylesheet"><script src="./Mysql veritabanında FullText Index ile arama yapmak_files/default+tr.I.js.indir" type="text/javascript"></script>
+
+
+		<h3>
+		<span style="font-size:12px;font-weight:700;color:#898989;">sosyal</span></h3>
+			<a title="Linkedin sayfam" href="http://www.linkedin.com/in/zkucukozer">           <img alt="Linkedin" border="0" src="./Mysql veritabanında FullText Index ile arama yapmak_files/linkedin.png"></a>
+            <a title="FriendFeed sayfam" href="http://friendfeed.com/zulkufkucukozer">          <img alt="FriendFeed" border="0" src="./Mysql veritabanında FullText Index ile arama yapmak_files/friendfeed_icon.png"> </a>
+            <a title="Twitter sayfam" href="http://www.twitter.com/ZulkufKucukozer">           <img alt="Twitter" border="0" src="./Mysql veritabanında FullText Index ile arama yapmak_files/twitter-icon.png"></a>
+			
+		<br>
+		<br>
+		<a target="_blank" title="RSS beslemesine mail ile abone ol" href="http://feedburner.google.com/fb/a/mailverify?uri=zskblog">    <img alt="RSS beslemesine mail ile abone ol" border="0" src="./Mysql veritabanında FullText Index ile arama yapmak_files/feedburner.png"> </a>				 
+		
+		<div style="margin-left: 44px; margin-bottom: 8px;">           
+			<a target="_blank" title="RSS beslemesine mail ile abone ol" href="http://feedburner.google.com/fb/a/mailverify?uri=zskblog">Mail ile blogu takip et! </a>
+        </div>
+
+	</div>
+	<br>
+	<div class="content">
+	 	<center>
+			<img style="border:0px;" src="./Mysql veritabanında FullText Index ile arama yapmak_files/MCPD.gif" alt="MCPD"> 
+		</center>
+	</div>
+	<br>
+	
+</div>		
+		
+	</div>
+
+	<div style="clear: both;">&nbsp;</div>
+</div>
+<div id="footer" align="center">
+	<table border="0">
+		<tbody><tr style="font-size:11px;">
+			<td>Hiçbir telif hakkı yoktur</td>
+			<td> | </td>
+			<td><a style="text-decoration:none; color:#437643;" title="xhtml validation" href="http://validator.w3.org/check?uri=referer"><img style="border:0px;" src="./Mysql veritabanında FullText Index ile arama yapmak_files/xhtmlcheck.png" alt="xhtml validation"> XHTML</a></td>
+			<td> | </td>
+			<td>
+				 <!-- Place this tag where you want the +1 button to render. -->
+				<div id="___plusone_0" style="position: absolute; width: 450px; left: -10000px;"><iframe ng-non-bindable="" frameborder="0" hspace="0" marginheight="0" marginwidth="0" scrolling="no" style="position:absolute;top:-10000px;width:450px;margin:0px;border-style:none" tabindex="0" vspace="0" width="100%" id="I0_1563297657532" name="I0_1563297657532" src="./Mysql veritabanında FullText Index ile arama yapmak_files/fastbutton.html" data-gapiattached="true"></iframe></div><div id="plusone-div" class="g-plusone" data-size="small" data-annotation="inline" data-width="150" data-gapiscan="true" data-onload="true" data-gapistub="true"></div>
+
+				<!-- Place this tag after the last +1 button tag. -->
+				<script type="text/javascript">
+					(function () {
+					var g = document.getElementById("plusone-div");
+					g.setAttribute("data-size", "small");
+					g.setAttribute("data-annotation", "inline");
+					g.setAttribute("data-width", "150");
+					var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+					po.src = 'https://apis.google.com/js/plusone.js';
+					var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+				  })();
+				</script>
+			</td>
+		</tr>
+	</tbody></table>
+	
+	
+
+
+</div>
+<script type="text/javascript">
+
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-10051510-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+</script>
+
+
+
+<iframe name="oauth2relay660874524" id="oauth2relay660874524" src="./Mysql veritabanında FullText Index ile arama yapmak_files/postmessageRelay.html" tabindex="-1" aria-hidden="true" style="width: 1px; height: 1px; position: absolute; top: -100px;"></iframe><table cellspacing="0" cellpadding="0" class="gstl_50 gssb_c" style="width: 99px; display: none; top: 812px; position: absolute; left: 914px;"><tbody><tr><td class="gssb_f"></td><td class="gssb_e" style="width: 100%;"></td></tr></tbody></table></body>
+<div id="chrome-clearly-root">
+  <div id="chrome-clearly-popshare">
+    <canvas id="chrome-clearly-popshare-image"></canvas>
+  </div>
+  <div id="chrome-clearly-poptranslate">
+    <div id="chrome-clearly-poptranslate-toolbox">
+    <span>Translation language:</span> <select id="chrome-clearly-poptranslate-lang"><option value="af">Afrikaans</option><option value="sq">Albanian</option><option value="am">Amharic</option><option value="ar">Arabic</option><option value="hy">Armenian</option><option value="az">Azerbaijani</option><option value="eu">Basque</option><option value="be">Belarusian</option><option value="bn">Bengali</option><option value="bs">Bosnian</option><option value="bg">Bulgarian</option><option value="ca">Catalan</option><option value="ceb">Cebuano</option><option value="ny">Chichewa</option><option value="zh-CN">Chinese (Simplified)</option><option value="zh-TW">Chinese (Traditional)</option><option value="co">Corsican</option><option value="hr">Croatian</option><option value="cs">Czech</option><option value="da">Danish</option><option value="nl">Dutch</option><option value="en">English</option><option value="eo">Esperanto</option><option value="et">Estonian</option><option value="tl">Filipino</option><option value="fi">Finnish</option><option value="fr">French</option><option value="fy">Frisian</option><option value="gl">Galician</option><option value="ka">Georgian</option><option value="de">German</option><option value="el">Greek</option><option value="gu">Gujarati</option><option value="ht">Haitian Creole</option><option value="ha">Hausa</option><option value="haw">Hawaiian</option><option value="iw">Hebrew</option><option value="hi">Hindi</option><option value="hmn">Hmong</option><option value="hu">Hungarian</option><option value="is">Icelandic</option><option value="ig">Igbo</option><option value="id">Indonesian</option><option value="ga">Irish</option><option value="it">Italian</option><option value="ja">Japanese</option><option value="jw">Javanese</option><option value="kn">Kannada</option><option value="kk">Kazakh</option><option value="km">Khmer</option><option value="ko">Korean</option><option value="ku">Kurdish (Kurmanji)</option><option value="ky">Kyrgyz</option><option value="lo">Lao</option><option value="la">Latin</option><option value="lv">Latvian</option><option value="lt">Lithuanian</option><option value="lb">Luxembourgish</option><option value="mk">Macedonian</option><option value="mg">Malagasy</option><option value="ms">Malay</option><option value="ml">Malayalam</option><option value="mt">Maltese</option><option value="mi">Maori</option><option value="mr">Marathi</option><option value="mn">Mongolian</option><option value="my">Myanmar (Burmese)</option><option value="ne">Nepali</option><option value="no">Norwegian</option><option value="ps">Pashto</option><option value="fa">Persian</option><option value="pl">Polish</option><option value="pt">Portuguese</option><option value="pa">Punjabi</option><option value="ro">Romanian</option><option value="ru">Russian</option><option value="sm">Samoan</option><option value="gd">Scots Gaelic</option><option value="sr">Serbian</option><option value="st">Sesotho</option><option value="sn">Shona</option><option value="sd">Sindhi</option><option value="si">Sinhala</option><option value="sk">Slovak</option><option value="sl">Slovenian</option><option value="so">Somali</option><option value="es">Spanish</option><option value="su">Sundanese</option><option value="sw">Swahili</option><option value="sv">Swedish</option><option value="tg">Tajik</option><option value="ta">Tamil</option><option value="te">Telugu</option><option value="th">Thai</option><option value="tr">Turkish</option><option value="uk">Ukrainian</option><option value="ur">Urdu</option><option value="uz">Uzbek</option><option value="vi">Vietnamese</option><option value="cy">Welsh</option><option value="xh">Xhosa</option><option value="yi">Yiddish</option><option value="yo">Yoruba</option><option value="zu">Zulu</option></select>
+    </div>
+    <div id="chrome-clearly-poptranslate-content">
+      <div id="chrome-clearly-poptranslate-word"></div>
+      <div id="chrome-clearly-poptranslate-voice">
+        <i class="material-icons" id="chrome-clearly-poptranslate-btn-speak">volume_up</i>
+        <span></span>
+      </div>
+      <div id="chrome-clearly-poptranslate-explain"></div>
+      <div id="chrome-clearly-poptranslate-translit"></div>
+      <div id="chrome-clearly-poptranslate-dict"></div>
+    </div>
+  </div>
+  <div id="chrome-clearly-popmenu">
+    <li id="chrome-clearly-popmenu-translate">Translate</li>
+    <li id="chrome-clearly-popmenu-copy">Copy</li>
+    <!--<li id="chrome-clearly-popmenu-share">Share</li>-->
+  </div>
+  <div id="chrome-clearly-outline" class="chrome-clearly-font-system"></div>
+  <div id="chrome-clearly-main" class="chrome-clearly-font-system">
+    <div id="chrome-clearly-title"></div>
+    <div id="chrome-clearly-byline"><span>About</span> <span id="chrome-clearly-value-readmin">0</span> Minutes</div>
+    <div id="chrome-clearly-content" style="zoom: 1;"></div>
+
+    <div id="chrome-clearly-footer">
+      <div id="chrome-clearly-share" class="chrome-clearly-share">
+        <span class="chrome-clearly-share-title">Does Clearly work fine?</span>
+        <div id="chrome-clearly-share-default" class="chrome-clearly-share-overlay" style="display: block;">
+            <i id="chrome-clearly-btn-thumb-up" class="material-icons chrome-clearly-thumb chrome-clearly-thumb-up">thumb_up</i>
+            <i id="chrome-clearly-btn-thumb-down" class="material-icons chrome-clearly-thumb chrome-clearly-thumb-down">thumb_down</i>
+        </div>
+        <div id="chrome-clearly-share-no" class="chrome-clearly-share-overlay" style="display: none;">
+          <span class="chrome-clearly-share-letter">We have received your feedback</span>
+          <a "chrome-clearly-btn-cantact"="" href="https://clearly.lesslab.net/r/chrome-support" target="_blank"><i class="material-icons">mail_outline</i>Contact us</a>
+        </div>
+        <div id="chrome-clearly-share-yes" class="chrome-clearly-share-overlay" style="display: none;">
+          <span class="chrome-clearly-share-letter">How is your experience with Clearly？</span>
+          <a id="chrome-clearly-btn-comments" href="https://clearly.lesslab.net/r/chrome-review" target="_blank"><i class="material-icons">star_border</i>Give stars</a>
+        </div>
+      </div>
+
+      <div class="chrome-clearly-moretips">
+      <span class="chrome-clearly-shortcut">Shortcuts: <strong>SHIFT+CTRL+C</strong> to Toggle, <strong>ESC</strong> to Close.</span>
+      <a class="chrome-clearly-feedback" target="_blank" href="https://clearly.lesslab.net/r/subscribe"><i class="material-icons">mail</i>Join maillist</a>
+      <a class="chrome-clearly-donate" target="_blank" href="https://clearly.lesslab.net/r/donate"><i class="material-icons">favorite</i>Donate</a>
+      </div>
+
+      <span class="chrome-clearly-lover"> <span>Build upon ❤ with Clearly</span><a target="_blank" class="chrome-clearly-footer-feedback" href="https://clearly.lesslab.net/r/feedback">Feedback</a></span>
+    </div>
+
+  </div>
+  <div id="chrome-clearly-tool">
+      <!--
+      <div class="chrome-clearly-menu">
+        <div class="chrome-clearly-form-group">
+          <span class="chrome-clearly-btn" id="chrome-clearly-translate-start">开始</span>
+        </div>
+      </div>
+      -->
+
+    <div class="chrome-clearly-menu">
+      <span id="chrome-clearly-btn-close"><i class="material-icons">cancel</i></span>
+    </div>
+
+    <div class="chrome-clearly-menu" chrome-clearly-menu-tooltip="STYLE">
+      <span id="chrome-clearly-btn-style"></span>
+    </div>
+
+    <div class="chrome-clearly-dialog" id="chrome-clearly-dialog-style">
+       <div class="chrome-clearly-overlay-backdrop">
+            <div class="chrome-clearly-setting">
+                <div class="chrome-clearly-dialog-title">STYLE</div>
+                <div class="chrome-clearly-dialog-btn-close"><i class="material-icons">close</i></div>
+
+                <div class="chrome-clearly-tcell">
+                  <div class="chrome-clearly-form-label"><span id="chrome-clearly-value-zoom" class="chrome-clearly-form-value">100%</span>Font size</div>
+                  <div class="chrome-clearly-form-group">
+                    <span class="chrome-clearly-btn-letter" id="chrome-clearly-btn-zoomin">A</span>
+                    <span class="chrome-clearly-btn-letter" id="chrome-clearly-btn-zoomout">A</span>
+                  </div>
+                </div>
+
+                <div class="chrome-clearly-tcell">
+                  <div class="chrome-clearly-form-label">Themes</div>
+                  <div class="chrome-clearly-form-group">
+                    <span class="chrome-clearly-btn chrome-clearly-btn-theme-default chrome-clearly-btn-selected"></span>
+                    <span class="chrome-clearly-btn chrome-clearly-btn-theme-yellow"></span>
+                    <span class="chrome-clearly-btn chrome-clearly-btn-theme-gray"></span>
+                    <span class="chrome-clearly-btn chrome-clearly-btn-theme-black"></span>
+                  </div>
+                </div>
+
+                <div class="chrome-clearly-tcell">
+                  <div class="chrome-clearly-form-label">Fonts</div>
+                  <div id="chrome-clearly-font-select-style" class="chrome-clearly-form-group"></div>
+                </div>
+
+                <div class="chrome-clearly-tcell">
+                  <div class="chrome-clearly-form-label">Outline</div>
+                  <div class="chrome-clearly-form-group">
+                    <div id="chrome-clearly-switch-outline" class="chrome-clearly-switch s-on">
+                        <span class="chrome-clearly-slider"></span>
+                    </div>
+                  </div>
+                </div>
+            </div>
+         </div>
+      </div>
+
+
+    <!--div class="chrome-clearly-menu" id="chrome-clearly-menu-translate" chrome-clearly-menu-tooltip="TRANSLATE">
+        <span><i class="material-icons" id="chrome-clearly-menu-translate-icon">translate</i></span>
+    </div-->
+
+    <div class="chrome-clearly-menu" id="chrome-clearly-menu-speak" chrome-clearly-menu-tooltip="AUDIO">
+        <span><i class="material-icons" id="chrome-clearly-menu-speak-icon">volume_down</i></span>
+            <!--
+            <span class="chrome-clearly-btn" id="chrome-clearly-btn-speak-pause" style="display:none"><i class="fa fa-pause"></i></span>
+            <span class="chrome-clearly-btn" id="chrome-clearly-btn-speak-resume" style="display:none"><i class="fa fa-play"></i></span>
+            <span class="chrome-clearly-btn" id="chrome-clearly-btn-speak-stop" style="display:none"><i class="fa fa-stop"></i></span>
+            -->
+    </div>
+
+    <div class="chrome-clearly-menu" id="chrome-clearly-menu-fullscreen" chrome-clearly-menu-tooltip="FULLSCREEN">
+        <span><i class="material-icons" id="chrome-clearly-menu-fullscreen-icon">fullscreen</i></span>
+    </div>
+  </div>
+</div></html>

@@ -1,0 +1,175 @@
+﻿	$(window).load(function() {
+
+	// tüm img elamanlarını bulup özellik ve olaylar ekliyoruz. 
+    $('img:not(.ss)').each(function() {
+		// Gösterilecek maximum resim genişliğini burada yazıyoruz
+        var WidthMax = 600; 
+        // Gösterilecek maximum resim yüksekliği burada yazıyoruz
+		var HeightMax = 1000;    
+        // Resmin orijinal genişliğini al
+		var width = $(this).width();
+		// Resmin orijinal yüksekliğini al
+        var height = $(this).height();
+ 
+        // maximum genişlik veya yüksekliği aştığını kontrol et
+        if((width > WidthMax) || (height > HeightMax)){
+
+			// Resmin aşılan sınırına göre yüksekliği ya da genişliği değiştir.
+			// Resmin oranı otomatik olarak korunacaktır.
+			if (width > WidthMax)
+				$(this).css("width", WidthMax); 
+			else
+				$(this).css("height", HeightMax);
+              
+		$(this).mouseover( function () {
+			// Fare imleci resmin üzerine gelirse id özniteliği out olan bir katman oluşturup
+			// body elamanıa ekleyecek kodu buraya yazıyoruz.
+			
+			// oriijinal boyutlara sahip resmi barındıracak katmanın eklenip eklenmediğini 
+			// kontrol ediyoruz.
+			if ( $('#out').length == 0 )
+				{			
+				// gösterilecek katmanı oluşturup direk body elemanına ekliyoruz.
+				// oluşturulan katmanın içine tam boyutlu resmi ekiliyoruz.
+				$('body').append("<div id=\"out\" > <img src=\""+$(this).attr("src")+"\" >  </div>");
+				$('#out').css("position","absolute").css("border","3px solid gray");			
+				}
+			
+			}
+			
+			).mouseout( function () {
+				// fare resmin üzerinden kalkınca açılan katmanı yok et.
+				$('#out').remove();					
+			}
+			
+			).mousemove(function(e){
+				// Fare imleci resmin üzerinde gezinirken açılan katmanın pozisyonunu
+				// değiştirecek kodu buraya yazıyoruz.
+			
+				// farenin kordinatlarını al
+				var x=e.pageX ;
+				var y=e.pageY ;
+				// açılan katmanın posizyonunu fare imlecinin pozisyonuna göre değiştir.
+				$('#out').css("top", y+15);
+				$('#out').css("left", x+15);
+			}
+					
+			);
+		
+		}
+ 
+    });
+
+	
+});			
+	
+$(document).ready(function(){
+
+$('#yoruml').click( function()
+{
+
+$('#yorum').show("fast");
+$('#yorumyaz').hide("fast");
+$('#yoruml').css('color','#e33b00');
+$('#yorumyazl').css('color','rgb(100, 114, 145)');
+});
+
+$('#post').click( function()
+
+{
+ $('#interest_count').text("").css('color','black');
+
+  if( $('#isim').val().split('').length > 2  && $('#yorumy').val().split('').length > 2  )
+  {
+             $.ajax({
+                 type: "POST",
+                 url: "yorumlar.asmx/yorumyolla",
+                 data: "{'isim':'" + $('#isim').val() + "','site':'"+$('#site').val()+"','yorum':' "+$('#yorumy').val().replace(/'/g, '%27')+"' ,'aid':'"+$('#aid').val()  +"'}" ,			
+                 contentType: "application/json; charset=utf-8",
+                 dataType: "json",
+                 success: function(msg) {
+                     AjaxSucceeded(msg.d);
+                 },
+                 error: AjaxFailed
+             });
+    }
+    else
+    
+    {
+    $('#interest_count').text("Girilen veriler hatalı!").css('color','red');
+    }
+
+});
+          function AjaxSucceeded(result) {
+
+              if (parseInt(result) == 0)
+                $('#interest_count').text(result).css('color','red');
+              else if ( parseInt(result ) == 1)
+                $('#interest_count').text("Yorumunuz alındı. Onaylandıktan sonra görüntülenecektir. ").css('color','green');
+              else if ( parseInt(result ) == 1)
+                $('#interest_count').text(" Beklenmedik bir soun oluştu. ").css('color','red');
+ 
+          }
+      function AjaxFailed(result) {
+            $('#interest_count').text(result).css('color','red');
+      }  
+
+
+$('#yorumyazl').click( function()
+{
+$('#yorumy').html("");
+$('#yoruml').css('color','rgb(100, 114, 145)');
+$('#yorumyazl').css('color','#e33b00');
+$('#yorum').hide("fast");
+$('#yorumyaz').show("fast");
+}
+
+);
+
+
+});
+
+
+
+
+
+function hakkimda()
+{
+var ic= document.getElementById("icerik");
+
+ ic.innerHTML="";
+ ic.innerHTML=" <table width=\"600\" align=\"center\"> <tr><td>"+
+ "<div id=\"hakkimda\"> <b style=\"color:#ec6c00; \">Hakkımda</b> </div><br/>"+
+"Herkese merhabalar.  "+
+ "Elektronik mühendisliği mezunuyum. <a title=\"ix future yazılım\" href=\"http://www.ixfuture.com\">IXFuture Yazılım Teknolojileri</a>'nde programcı olarak çalışıyorum. "+
+ "<br/>Sizlere yararlı olabileceğini düşündüğüm yazılarımı fırsat buldukça yazmaya devam edeceğim..."+
+ "<br/><br/> Zülküf Küçüközer."+
+  "<br/><br/>Not : Site dizaynın bir kısmı <a href=\"http://www.freecsstemplates.org/\">Free CSS Templates</a>\ sitesinden alınmıştır." +
+ " </td></tr><td><br/>"+
+ "<div id=\"hakkimda\"> <b style=\"color:#ec6c00; \">İletişim</b> </div><br/>e-posta : skucukozer[at]yahoo.com <br/><br/>"+
+ "</td></tr>"+
+"</table> ";
+}
+function referanslarim()
+{
+var ic= document.getElementById("icerik");
+ ic.innerHTML="";
+ ic.innerHTML=""; 
+}
+function iletisim()
+{
+var ic= document.getElementById("icerik");
+ ic.innerHTML="";
+  ic.innerHTML=" <table> <tr><td>"+
+ "</td></tr> </table>"; 
+}
+function tavsiyelerim()
+{
+var ic=document.getElementById("icerik");
+ ic.innerHTML="";
+  ic.innerHTML=" <table> <tr><td>"+
+ "<br/>Kitap tavsiyelerim:"+
+ "<br/> C# ESSENTIALS"+
+ "<br/> INTRODUCTION TO JAVA PROGRAMMING"+
+ "</td></tr> </table>";  
+}
