@@ -511,7 +511,7 @@ DROP TABLE tableName;
 		-- XXX > ASC (artan) | DESC (azalan) - default olarak ASC'dir	
 ** ORDER BY **
 
-** JOIN **
+** JOIN**
 	SELECT * FROM tableName1, tableName2
 		-- iki tablonun kartezyen çarpımını döndürür (join)
 		-- ilk önce birinci tablonun ilk satırı ile ikinci tablonun tüm satırlarını tek tek döndürür
@@ -606,7 +606,8 @@ DROP TABLE tableName;
 	SELECT id, name FROM tableName2
 	ORDER BY id DESC
 		-- UNION komutu iki kümenin birleşimini döndürür, kümede tekrarlı eleman olmaz, her satır 1 kez döndürülür
-		-- iki tablodaki tüm satırlar, id ve name sütunları ile ALT ALTA - JOIN ile farkı bu -  döndürülür
+		-- iki tablodaki tüm satırlar, id ve name sütunları ile ALT ALTA - JOIN ile farkı bu -  döndürülür 
+		-- sütun isimleri, ilk tablodaki isimler olur
 
 	SELECT id, name FROM tableName1
 	INTERSECT
@@ -620,6 +621,7 @@ DROP TABLE tableName;
 	ORDER BY id DESC
 		-- fark işlemi yapar
 
+	* EXCEPT ALL kullanımı? anlamadım *
 	* NOT UNIQUE ve UNIQUE kullanımını araştır *
 	* WITH kullanımını araştır *
 ** SUBQUERY, UNION, INTERSECT, EXCEPT, UNIQUE, NOT UNIQUE, WITH **
@@ -688,7 +690,7 @@ DROP TABLE tableName;
 		-- içinde 'ers' bulunanları döndürür
 ** REGEXP **
 
-** SOME, ALL **
+** SOME, ALL, ANY **
 	SELECT * FROM tableName WHERE columName > SOME (küme)
 		-- eğer columnName, kümenin içindeki herhangi bir elemandan daha büyük ise satırı döndürür
 		-- küme = {0, 1, 2, 3, 4} ve columnName = 1, 2, 3, 4 için --> satırı döndürür
@@ -696,4 +698,11 @@ DROP TABLE tableName;
 
 	SELECT * FROM tableName WHERE columName > ALL (küme)
 		-- eğer columnName, kümenin içindeki her elemandan daha büyük ise satırı döndürür
-** SOME, ALL **
+	SELECT * FROM tableName WHERE columName <> ALL (küme)
+		-- columnName küme'nin hiçbir elemanına eşit değil
+	SELECT beer FROM Sells WHERE price >= ALL(SELECT price FROM Sells)
+		-- to find the beer sold highest price
+
+	SELECT * FROM tableName WHERE columName > ANY (küme)
+		-- eğer columnName, kümenin içindeki en az bir elemandan daha büyük ise satırı döndürür
+** SOME, ALL, ANY**
