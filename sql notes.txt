@@ -1,5 +1,7 @@
 -- SQL cümlelerinin hepsi MySQL için yazılmadı, bazı cümleler MySQL için çalışmayabilir
 
+-- https://www.mysqltutorial.org/ --> özellikle management için bakabilirsin
+
 ** ABSTRACTION **
 	-- physical --> disk
 	-- logical  --> relationships
@@ -12,7 +14,8 @@
 		-- örneğin müşterinin adı ve adresi SUPER KEY olabilir, çünkü bu iki özellik o satırı eşsiz yapar
 	-- CANDIDATE KEY:
 		-- içinde SUPER KEY içermeyen SUPER KEY'dir
-		-- mesela müşteri adı, yaşı ve adresi SUPER KEY belirtir ancak adı ve adresi de SUPER KEY belirtir, adı ve adresi SUPER KEY olarak belirtilirse CANDIDATE KEY olur
+		-- mesela müşteri adı, yaşı ve adresi SUPER KEY belirtir ancak adı ve adresi de SUPER KEY belirtir, 
+		-- adı ve adresi SUPER KEY olarak belirtilirse CANDIDATE KEY olur
 		-- PRIMARY KEY de CANDIDATE KEY'dir
 ** SUPERKEY, CANDIDATE KEY **
 
@@ -28,8 +31,27 @@
 	--		v3 view'inin v2 view'ine bağımlılığı, depend directly'dir
 	-- eğer bir view kendine bağımlısı ise bağımlılık türü, recursive'dir
 
+	-- two kinds of views :
+	-- virtual (not stored, just a query to construct the relation)
+	--		kullanıcıların tüm tabloya erişmesini engellemek için kullanılabilir
+	-- materialized --> data constructed and stored
+
+	CREATE [MATERIALIZED] VIEW viewname AS <any legal SQL expression>
+
+	SELECT columnName FROM viewName WHERE condition
+
+	-- view'e insert etmek için MATERIALIZED olması lazım
 	-- view'e insert yaparken normal tabloya yaparmış gibi yapılır(??)
-	CREATE VIEW viewname AS <any legal SQL expression>
+	-- TRIGGERS ON VIEWS --> trigger aracılığıyla tabloya insert yapılabilir
+	CREATE TRIGGER ViewTrig 
+	INSTEAD OF INSERT ON Synergy
+	REFERENCING NEW ROW AS n 
+	FOR EACH ROW
+	BEGIN
+		INSERT INTO LIKES VALUES(n.drinker, n.beer);
+		INSERT INTO SELLS(bar, beer) VALUES(n.bar, n.beer);
+		INSERT INTO FREQUENTS VALUES(n.drinker, n.bar);
+	END;
 ** VIEW **
 
 ** TRANSACTIONS **
@@ -45,6 +67,12 @@
 	-- örneğin çok fazla update yapılan bir veritabanı ise autoCommit özelliğinin
 	-- kapalı olmasında fayda var
 	-- kritik işlemlerden sonra commit alınması daha makbül
+
+	-- ACID transactions --> atomic, consistent, isolated, durable
+
+	-- ISOLATION LEVELS
+	--		SET TRANSACTION [READ ONLY] ISOLATION LEVEL X
+	--  	X may be --> SERIALIZABLE, REPETEABLE READ, READ COMMITTED, READ UNCOMMITTED
 ** TRANSACTIONS **
 
 ** INTEGRITY CONSTRAINTS ON A SINGLE RELATION **
@@ -52,7 +80,7 @@
 	-- primary key - null olamaz - yalnız bir sütun -ya da birden fazla sütunun birleşimi- primary key olabilir
 	-- foreign key 
 	-- unique - bir defaya mahsus null olabilir - birden fazla unique column olabilir
-	-- check(P) - bu ne?
+	-- CHECK(condition)
 ** INTEGRITY CONSTRAINTS ON A SINGLE RELATION **
 
 ** INDEXES **
@@ -60,8 +88,12 @@
 
 	-- index ile verilere daha hızlı erişilebilir, dosya yapısını buna göre organize eder
 
-	CREATE INDEX id_index on tableName(id)
+	CREATE INDEX indexName ON tableName(columnName1, columName2, ...)
 		-- manuel index oluşturma
+
+	-- index oluşturmak her zaman yararlı değildir çünkü genelde veritabanları verileri
+	-- balanced search tree şeklinde tutar
+	-- tablo güncellendiğinde bst'nin de güncellenmesi gerekir, bu da makineyi yorar
 ** INDEXES **
 
 ** USER-DEFINED TYPES **
@@ -85,28 +117,52 @@
 	-- STREAM NEDİR? ÖĞREN VE NOT AL
 ** LARGE OBJECT TYPES **
 
-** AUTHORIZATION **
-	-- YETKİLER > read, insert, update, delete (tablo üzerindeki işlemler)
-	-- YETKİLER > index tanımlama, resources(yeni tablolar oluşturma)
-	-- YETKİLER > alteration(alter komutları), drop(tabloyu silme)
+** USERS **
+	CREATE USER 'userName'@hostName IDENTIFIED BY 'password';
 
-	-- all privileges > tüm yetkiler
-	GRANT <privilege list (read, insert, update, delete)>
-	ON <relation name or view name> 
+	DROP USER userName
+** USERS **
+
+** AUTHORIZATION **
+	-- https://mariadb.com/kb/en/grant/
+
+	SHOW GRANTS FOR userName
+
+	GRANT ALL PRIVILEGES 
+	ON '.'
+	TO userName
+
+	-- It’s crucial to refresh the privileges once new ones have been awarded with the command:
+	FLUSH PRIVILEGES;
+
+	-- herhangi bir yetki verme
+	GRANT <privilege list>
+	ON <db name, relation name or view name> 
 	TO <user list>
+	WITH GRANT OPTION -- those user will be able to authorize other users
 
 	GRANT SELECT ON tableName TO <user list>
-		-- okuma yetkisi verme
+	
+	GRANT SELECT, INSERT(columnName), UPDATE(columnName)
+	ON <db name, relation name or view name> 
+	TO <user list>
 
+	-- The REVOKE command removes user access rights or privileges to the database objects
+	-- but the privileges will be remove which given by the user who executes the command
+	-- so if the users whose privileges wanted to be removed are given privileges by another person
+	-- their privileges will be keeping
 	REVOKE <privilege list>
-	ON <relation name or view name >
+	ON <db name, relation name or view name> 
 	FROM <user list>
+	CASCADE RESTRICT
+
 ** AUTHORIZATION **
 
 ** ROLES **
 	-- veritabanı yetkileri için roller tanımlanabilir
 	-- örneğin programcı rolü, veritabanı yedekçisi rolü, ...
 	-- tablo yerine view de kullanılabilir
+	-- https://www.mysqltutorial.org/mysql-roles/
 
 	CREATE ROLE roleName
 		-- rol oluşturma
@@ -123,117 +179,221 @@
 	-- en kötü ve yavaş teknolojidir
 ** ODBC **
 
-** PROCEDURES AND FUNCTIONS **
+** SQL PROGRAMMING **
 	-- ATOMIC keyword'ünün ne anlama geldiğini ve ne işe yaradığını öğren, not al
-	-- bir yapısal programlama dilinde 3 özellik olmalı :
-	-- fonksiyonlar, koşullar, döngüler
-	-- SQL de bunların hepsi var
 
-	-- bazı veritabanları table-valued functions barındırır
-	-- yani fonksiyonlar tablo döndürebilir
+	** FUNCTIONS **
+		-- fonksiyon yazma
+		CREATE FUNCTION getDeptCount(deptName VARCHAR(20)) RETURNS INTEGER
+			BEGIN
+				DECLARE count INTEGER
+				SELECT COUNT(*) 
+				-- SET count = QUERY şeklinde de yazılabilir
+				INTO count -- dönen sonuç count değişkenine atılıyor
+				FROM instructor 
+				WHERE instructor.deptName = deptName
+				RETURN count
+			END
 
-	-- functions
-	-- her seferinde query'ler ile uğraşılmadan fonksiyonlar çağırılır, normal methodlar gibi
+		-- fonksiyon çağırma
+		SELECT deptName, budget 
+		FROM department
+		WHERE getDeptCount(deptName) > 1
+		-- direkt SELECT functionName() olarak da çağırılabilir
 
-	-- fonksiyon yazma
-	CREATE FUNCTION getDeptCount(deptName VARCHAR(20)) RETURNS INTEGER
-	BEGIN
-	DECLARE count INTEGER;
-	SELECT COUNT(*) INTO count FROM instructor -- dönen sonuç count değişkenine atılıyor
-	WHERE instructor.deptName = deptName
-	RETURN count;
-	END
+		-- tablo döndüren fonksiyon yazma
+		CREATE FUNCTION getInstructors(deptName CHAR(20)) 
+		RETURNS TABLE (id INT(11), name VARCHAR(20), deptName VARCHAR(20), salary NUMERIC(8,2))
+			BEGIN
+				RETURN TABLE (
+					SELECT id, name, deptName, salary 
+					FROM instructor 
+					WHERE instructor.deptName = deptName
+				)
+			END
 
-	-- fonksiyon çağırma
-	SELECT deptName, budget FROM department
-	WHERE getDeptCount(deptName) > 1
+		-- tablo döndüren fonksiyon çağırma
+		SELECT * FROM TABLE (getInstructors('music'))
 
-	-- tablo döndüren fonksiyon yazma
-	CREATE FUNCTION getInstructors(deptName CHAR(20)) 
-	RETURNS TABLE (id INT(11), name VARCHAR(20), deptName VARCHAR(20), salary NUMERIC(8,2))
-	BEGIN
-	RETURN TABLE (SELECT id, name, deptName, salary FROM instructor WHERE instructor.deptName = deptName)
-	END
+		-- RETURN does not terminate the function!!!
+		CREATE FUNCTION getCityCount(countryCode CHAR(3)) RETURNS INTEGER
+			BEGIN
+	            DECLARE cityCount INTEGER;
+	       
+	        	SELECT COUNT(*)
+				INTO cityCount
+	            FROM City
+	            WHERE City.CountryCode = countryCode;
+	       
+	            RETURN cityCount;
+			END
 
-	-- tablo döndüren fonksiyon çağırma
-	SELECT * FROM TABLE (getInstructors('music'))
+		SELECT getCityCount('TUR')
+	** FUNCTIONS **
 
-	-- procedure yazmak
-	CREATE PROCEDURE getDeptCount(IN deptName VARCHAR(20), OUT count INT)
-	BEGIN
-	SELECT COUNT INTO count FROM instructor
-	WHERE instructor.deptName = deptName
-	END
+	** PROCEDURES **
+		-- procedure yazmak
+		-- IN --> değeri değiştirilecek (procedure içinde), OUT --> döndürülecek, INOUT --> ikisi de
+		CREATE PROCEDURE getDeptCount(IN deptName VARCHAR(20), OUT count INTEGER)
+		BEGIN
+			SELECT COUNT 
+			INTO count 
+			FROM instructor
+			WHERE instructor.deptName = deptName
+		END
 
-	-- procedure çağırmak
-	DECLARE count INT 				-- bu değişkenin içine procedure'den dönen değer atılır
-	CALL getDeptCount("Pyhsics", count);
-	-- procedure'lerde overloading de olabilir
+		-- procedure çağırmak (in function or procedure)
+		DECLARE count INT -- bu değişkenin içine procedure'den dönen değer atılır
+		CALL getDeptCount("Pyhsics", count)
+
+		-- procedure'lerde overloading de olabilir
+
+		CREATE PROCEDURE getCityCountProcedure(IN countryCode char(3), OUT cityCount INTEGER)
+			BEGIN
+			    SELECT COUNT(*)
+			    INTO cityCount
+			    FROM City
+			    WHERE City.CountryCode = countryCode;
+			    -- şöyle de yazılabilir
+			    SET cityCount = 
+			    SELECT COUNT(*)
+			    FROM City
+			    WHERE City.CountryCode = countryCode;
+			END;
+
+		-- in funcion or procedure
+		DECLARE cityCount INT
+		CALL getCityCountProcedure('TUR', cityCount)
+		-- dönen değer cityCount'ın içinde
+	** PROCEDURES **
+
+	** CURSOR **
+		DECLARE myCursor CURSOR FOR <query>
+		DECLARE NotFound CONDITION FOR SQLSTATE '02000'
+
+		OPEN myCursor
+
+		loopName: LOOP
+			IF NotFound THEN 
+				LEAVE loopName
+			END IF
+
+			FETCH FROM myCursor INTO variable1, variable2, ... -- döngüden dönen column'lar
+			... 
+		END LOOP
+
+		CLOSE myCursor
+	** CURSOR **
+
+	-- variable assignment - must be a single value
+	DECLARE variable INTEGER DEFAULT firstValue
+	SET variable = 0 -- or query (that returns a single value)
+
+	-- if statements
+	IF condition THEN
+
+	ELSEIF condition THEN
+
+	ELSE 
+
+	END IF;
+
+	-- loop:
+	loopName: LOOP
+		...
+		LEAVE loopName
+		...
+	END LOOP
 
 	-- while döngüsü
-	CREATE PROCEDURE procedureName ()
-	BEGIN
-	DECLARE n INT DEFAULT 0;
+	DECLARE n INT DEFAULT 0
 	WHILE n < 10 DO
 		SET n = n + 1
 	END WHILE
-	END
 
 	-- repeat döngüsü (repeat = do while)
-	CREATE PROCEDURE procedureName ()
-	BEGIN
-	DECLARE n INT DEFAULT 0;
+	DECLARE n INT DEFAULT 10
 	REPEAT
 		SET n = n - 1
 		UNTIL n = 0
 	END REPEAT
-	END
-
+	
 	-- for döngüsü
-	CREATE PROCEDURE procedureName ()
-	BEGIN
-	DECLARE n INT DEFAULT 0; -- n toplam bütçedir
-	FOR r AS -- r her kayıttaki budget değeridir (her kayıt için döner)
-		SELECT budget FROM department WHERE deptName = 'Music'
-	DO
+	DECLARE n INT DEFAULT 0 -- n toplam bütçedir
+	-- r her kayıttaki budget değeridir (her kayıt için döner)
+	FOR r AS SELECT budget FROM department WHERE deptName = 'Music' DO
 		SET n = n + r.budget
 	END FOR
-	END
-** PROCEDURES AND FUNCTIONS **
+** SQL PROGRAMMING **
 
 ** TRIGGERS **
 	-- belli bir işlem tamamlandığında tetiklenen fonksiyonlardır
 
+	X TRIGGER triggerName
+	XX XXX Z ON tableName
+	REFERENCING Y YY AS newRow
+	XXXX
+	YYY
+	-- X    -> CREATE, REPLACE
+	-- XX   -> AFTER, BEFORE
+	-- XXX  -> INSERT, UPDATE, DELETE
+	-- Z    -> OF columnName (DEFAULT'U BOŞ- yani herhangi column için)
+	-- Y    -> NEW, OLD
+	-- YY   -> ROW, TABLE
+	-- XXXX -> FOR EACH ROW, FOR EACH STATEMENT (DEFAULT'U ETKİLENEN ROW'LAR İÇİN, YANİ FOR EACH ROW SANIRIM.)
+	-- YYY  -> 
+	--   SQL statements/queries
+    --   surround with BEGIN . . . END if there is more than one line
+
+  	-- mariadb için:
+  	-- sadece NEW ve OLD keyword'leri var- mesela NEW.columnName (REFERENCING keyword yok)
+  	CREATE [OR REPLACE]
+	    [DEFINER = { user | CURRENT_USER | role | CURRENT_ROLE }]
+	    TRIGGER [IF NOT EXISTS] trigger_name trigger_time trigger_event
+	    ON tbl_name FOR EACH ROW
+	   	[{ FOLLOWS | PRECEDES } other_trigger_name ]
+	   	trigger_stmt;
+
 	-- account tablosuna herhangi bir kayıt eklenmeden önce çalışır
-	CREATE TRIGGER triggerName BEFORE INSERT ON account
-	  FOR EACH ROW SET @sum = @sum + NEW.amount; -- NEW yeni eklenen kayıttır
+	CREATE TRIGGER triggerName 
+	BEFORE INSERT ON account
+		FOR EACH ROW 
+			SET @sum = @sum + NEW.amount -- NEW yeni eklenen kayıttır (default olarak)
 
-	 -- triggering event can be insert, delete or update
-	 -- referencing old row as > for deletes and updates
-	 -- referencing new row as > for inserts and updates
+	CREATE TRIGGER PriceTrigAFTER 
+	UPDATE OF price ON Sells
+	REFERENCING OLD ROW AS ooo
+	NEW ROW AS nnn
+		FOR EACH ROW
+			WHEN(nnn.price > ooo.price + 1.00)
+				INSERT INTO RipoffBars VALUES(nnn.bar);
 
-	 CREATE TRIGGER setNullTrigger BEFORE UPDATE ON takes
-	 REFERENCING NEW ROW AS nRow
-	 FOR EACH ROW 
-	 	WHEN(nRow.grade = ' ')
-	 		BEGIN ATOMIC
-	 			SET nRow.grade = null
-	 		END
+	CREATE TRIGGER triggerName 
+	AFTER INSERT ON Sells
+	REFERENCING NEW ROW AS newRow
+		FOR EACH ROW 
+			WHEN(newRow.beer NOT IN (SELECT name FROM Beers))
+		 		INSERT INTO Beers(name) VALUES(newRow.beer)
+
+	CREATE TRIGGER setNullTrigger 
+	BEFORE UPDATE ON takes
+	REFERENCING NEW ROW AS nRow
+		FOR EACH ROW 
+			WHEN(nRow.grade = ' ')
+				SET nRow.grade = null
 ** TRIGGERS **
 
 ******************************************* 
   DATA DEFINITION & MANIPULATION LANGUAGE   
 *******************************************
 
-USE databaseName; 
+USE databaseName 
 	-- veritabanı sunucusundaki veritabanlarının birisine bağlanmak için kullanılır
 
-DESC databaseName.tableName;
-	-- veritabanındaki tablo bilgilerini döndürür
+DESC databaseName.tableName
+	-- tablo bilgilerini döndürür
 
-DELETE FROM tableName WHERE specificColumnName = data;
-
-DROP TABLE tableName;
+DROP TABLE tableName
 	-- tablo siler
 
 ** CREATE **
@@ -242,29 +402,46 @@ DROP TABLE tableName;
 		columnName2 DATA_TYPE(MAX SIZE) XXX,
 		...
 		... 	
-	);
+	)
 	-- XXX --> DEFAULT <VALUE> | NOT NULL | AUTO_INCREMENT | ...
 
 	CREATE TABLE IF NOT EXISTS tableName (
 		...
 		...
-	);
+	)
 ** CREATE **
 
 ** INSERT ** 
 	INSERT INTO <any legal SQL expression>
+	
+	INSERT INTO tableName (subquery)
 		-- bir query'den dönen sonuçların hepsi de kayıt edilebilir - tek insert sorgusu ile
 
 	INSERT INTO tableName (columnName1, columnName2, ...) 
 	VALUES 
 	('data1', 'data2', ...), 
-	('data1', 'data2', ...);
+	('data1', 'data2', ...)
+		-- column name'ler verilmeden de yazılabilir ancak yazılırlarsa:
+		-- default value sağlanması ya da belirtilmeyen column'un null olmasının istenmesi 
+		-- gibi durumlarda sadece istenilen columnName'ler yazılabilir
 
 	INSERT INTO tableName (columnName1, columnName2, ...) 
 	VALUES ('data1', 'data2', ...), ('data1', 'data2', ...)
-	ON DUPLICATE KEY UPDATE columnName1 = data;
+	ON DUPLICATE KEY UPDATE columnName1 = data
 		-- eğer columnName1 = data koşulu sağlanırsa güncelleme yapar, sağlanmazsa ekleme yapar
-** INSERT ** 
+** INSERT **
+
+** DELETE **
+	DELETE FROM tableName WHERE specificColumnName = data
+	
+	DELETE FROM dependents WHERE employee_id IN (100, 101, 102)
+
+	-- Delete from Beers(name, manf) all beers for which there is another beer by the same manufacturer.
+	DELETE FROM Beers B WHERE EXISTS (SELECT name FROM Beers WHERE manf = B.manf AND name <> B.name)
+		-- yukardaki sorgu şu anlama geliyor:
+		-- WHERE EXISTS ifadesinden true dönen tuple’ların hepsini sil
+		-- ama önce işaretle hepsini tarayıp, ondan sonra işaretlediklerini sil
+** DELETE **
 
 ** CONCAT **
 	SELECT CONCAT_WS(" ", name, surname) AS nameAndSurname FROM users
@@ -283,46 +460,50 @@ DROP TABLE tableName;
 
 ** UPDATE **
 	UPDATE tableName SET updatingColumnName = updatedData, updatingColumnName2 = updatedData2 
-	WHERE specificColumnName = data2;
+	WHERE specificColumnName = data2
 
-	UPDATE tableName SET columnName1 = REPLACE(columName1, 'e', '!');
+	UPDATE tableName SET columnName1 = REPLACE(columName1, 'e', '!')
 		-- columnName1'deki tüm 'e'leri, '!' yapar
 		-- devamı da yazılabilir, normal UPDATE sorgusu gibi
 
 	INSERT INTO tableName (columnName1, columnName2, ...) 
 	VALUES ('data1', 'data2', ...), ('data1', 'data2', ...)
-	ON DUPLICATE KEY UPDATE columnName1 = data;
+	ON DUPLICATE KEY UPDATE columnName1 = data
 		-- eğer columnName1 = data koşulu sağlanırsa güncelleme yapar, sağlanmazsa ekleme yapar
 ** UPDATE **
 
 ** ALTER **
-	ALTER TABLE tableName ADD COLUMN newColumnName DATA_TYPE(SIZE) XXX;
-		-- XXX > NOT NULL, DEFAULT gibi diğer komutlar yazılabilir
+	ALTER TABLE tableName ADD COLUMN newColumnName DATA_TYPE(SIZE) XXX
+		-- XXX > NOT NULL, DEFAULT, AUTO_INCREMENT gibi diğer komutlar yazılabilir
 		-- tabloya yeni bir sütun ekler
 
-	ALTER TABLE tableName ADD COLUMN newColumnName DATA_TYPE(SIZE) XX specificColumnName;
+	ALTER TABLE tableName ADD COLUMN newColumnName DATA_TYPE(SIZE) XX specificColumnName
 	-- XX > AFTER | BEFORE
 	-- specificColumnName'den önce veya sonraya ekler (sıra olarak)
 
 	ALTER TABLE tableName DROP COLUMN droppingColumnName
 		-- tablodan sütun siler
 
-	ALTER TABLE tableName ADD PRIMARY KEY(columnName);
-		-- ilgili sütunu birincil anahtar yapar
+	ALTER TABLE tableName ADD FOREIGN KEY(id) REFERENCES foreignTableName(parentId)
 
-	ALTER TABLE tableName DROP PRIMARY KEY;
+	ALTER TABLE tableName ADD PRIMARY KEY(columnName)
+		-- ilgili sütunu birincil anahtar yapar
+	ALTER TABLE tableName ADD CONSTRAINT keyName PRIMARY KEY(columnName)
+		-- bazı veritabanlarında böyleymiş
+
+	ALTER TABLE tableName DROP PRIMARY KEY
 		-- tablodaki birincil anahtarı kaldırır
 
-	ALTER TABLE tableName CHANGE oldColumnName newColumnName DATA_TYPE(SIZE) AUTO_INCREMENT;
+	ALTER TABLE tableName CHANGE oldColumnName newColumnName DATA_TYPE(SIZE) AUTO_INCREMENT
 		-- var olan sütunun özelliklerini değiştirmek
 
-	ALTER TABLE oldColumnName RENAME newColumnName;
+	ALTER TABLE oldColumnName RENAME newColumnName
 ** ALTER **
 
 ** ALIAS **
-	SELECT columnName AS newColumnName FROM tableName AS newTableName;
+	SELECT columnName AS newColumnName FROM tableName AS newTableName
 
-	SELECT satışFiyatı * adet AS sermaye FROM tableName ORDER BY sermaye DESC;	
+	SELECT satışFiyatı * adet AS sermaye FROM tableName ORDER BY sermaye DESC	
 	 -- satışFiyatı ve adet'i çarpıp, sermayeyi hesaplar ve sermayeye göre büyükten küçüğe olacak şekilde döndürür
 
 	SELECT *, SUM(id) AS total FROM tableName
@@ -334,7 +515,9 @@ DROP TABLE tableName;
 		-- satır için 'data'dır
 ** ALIAS **
 
-** PRIMARY KEY, UNIQUE, FOREIGN KEY **
+** INTEGRITY CONSTRAINTS **
+	-- foreign key, must be declared as a key or unique in the foreign table
+
 	CREATE TABLE tableName (
 		columnName1 DATA_TYPE(MAX SIZE) XXX, 
 		columnName2 DATA_TYPE(MAX SIZE) XXX,
@@ -343,25 +526,14 @@ DROP TABLE tableName;
 		parentId INT NOT NULL
 		-- columnName1 tekrar edebilir, diğerleri de ancak hepsinin 
 		-- birden tekrar ettiği bir kayıt olamaz!	
-		PRIMARY KEY(columName1, columnName2, ...),
-		UNIQUE(columName1, columName2)
-		FOREIGN KEY (parentId) 
+		PRIMARY KEY(columName1, columnName2, ...), -- direkt column'u tanımlarken de yazılabilir
+		UNIQUE(columName1, columName2)			   -- direkt column'u tanımlarken de yazılabilir
+		FOREIGN KEY (parentId) 					   -- direkt column'u tanımlarken de yazılabilir
 			REFERENCES parentTable(id)
-			ON UPDATE XXX, ON DELETE XXX 
+			ON UPDATE XXX, ON DELETE XXX -- bunlar optional, default'u RESTRICT
 			-- XXX > RESTRICT | CASCADE | SET NULL | NO ACTION | SET DEFAULT
-	);
-** PRIMARY KEY, UNIQUE, FOREIGN KEY **
-
-** DISTINCT **
-	SELECT DISTINCT * FROM tableName;
-		-- tekrarlı kayıtları getirmez
-
-	SELECT COUNT(DISTINCT columnName) FROM tableName;
-		-- columnName'deki tekrarsız kayıtların sayısını döndürür
-
-	SELECT ALL * FROM tableName;
-		-- tekrar eden kayıtları da döndürür
-** DISTINCT **
+	)
+** INTEGRITY CONSTRAINTS **
 
 ** SELF INTEGRITY **
 	CREATE TABLE person (
@@ -378,28 +550,46 @@ DROP TABLE tableName;
 		FOREIGN KEY (father) 
 			REFERENCES person(father)
 			ON UPDATE XXX, ON DELETE XXX 
-	);
+	)
 	-- mother ve father sütununda yer alan veriler, person tablosundaki verilerden biri olmalıdır
 	-- tabloda hiç kayıt yokken sıkıntı doğacağından, ilk başta değerler null olabilir
 	-- ilk veriler kaydedildikten sonra ALTER komutu ile FOREIGN KEY de eklenebilir
 ** SELF INTEGRITY **
 
 ** CHECK **
-	CREATE TABLE section {
+	-- CHECK(condition) --> condition true dönerse kaydı yapar
+
+	CREATE TABLE section(
 		...
 		...
 		semester VARCHAR(6),
 		..
 		..
-		CHECK(semester IN ('Fall', 'Winter', 'Spring', 'Summer'))
-		-- semester sütununa IN'den sonra belirtilen küme elemanlarından birisi yazılabilir yalnızca
-	};
+		-- price REAL CHECK(price > 10), -- tanımlarken de yazılabilir
+		CHECK(semester IN ('Fall', 'Winter', 'Spring', 'Summer') AND price > 10),
+		-- CHECK(condition) --> true dönerse kayıt gerçekleşir, aksi takdirde reddedililir
+	)
 ** CHECK **
 
+** ASSERTIONS **
+
+** ASSERTIONS **
+
+** DISTINCT **
+	SELECT DISTINCT * FROM tableName
+		-- tekrarlı kayıtları getirmez
+
+	SELECT COUNT(DISTINCT columnName) FROM tableName
+		-- columnName'deki tekrarsız kayıtların sayısını döndürür
+
+	SELECT ALL * FROM tableName
+		-- tekrar eden kayıtları da döndürür
+** DISTINCT **
+
 ** NULL **
-	SELECT columName1, columnName2, ... FROM tableName WHERE specificColumnName IS NULL;
+	SELECT columName1, columnName2, ... FROM tableName WHERE specificColumnName IS NULL
 		-- null olanları döndürür
-	-- null ile yapılan tüm işlemler null döner
+	
 	-- null > 5 --> null döner
 	-- not null --> null
 	-- null or true --> true
@@ -409,20 +599,20 @@ DROP TABLE tableName;
 ** NULL **
 
 ** WHERE **
-	SELECT columName1, columnName2, ... FROM tableName WHERE specificColumnName = data;
+	SELECT columName1, columnName2, ... FROM tableName WHERE specificColumnName = data
 
-	SELECT columName1, columnName2, ... FROM tableName WHERE id < 5;
+	SELECT columName1, columnName2, ... FROM tableName WHERE id < 5
 
-	SELECT columName1, columnName2, ... FROM tableName WHERE condition1 AND condition2 AND condition3 AND ...;
+	SELECT columName1, columnName2, ... FROM tableName WHERE condition1 AND condition2 AND condition3 AND ...
 
-	SELECT columName1, columnName2, ... FROM tableName WHERE condition1 OR condition2 OR condition3 OR ...;
+	SELECT columName1, columnName2, ... FROM tableName WHERE condition1 OR condition2 OR condition3 OR ...
 
-	SELECT columName1, columnName2, ... FROM tableName WHERE (condition1 OR condition2) AND condition3;			
+	SELECT columName1, columnName2, ... FROM tableName WHERE (condition1 OR condition2) AND condition3			
 
-	SELECT columName1, columnName2, ... FROM tableName WHERE NOT condition;
+	SELECT columName1, columnName2, ... FROM tableName WHERE NOT condition
 		-- koşulu sağlayanları döndürmez
 
-	SELECT columName1, columnName2, ... FROM tableName WHERE condition1 AND NOT condition2; 
+	SELECT columName1, columnName2, ... FROM tableName WHERE condition1 AND NOT condition2 
 		-- condition1'i sağlayanları, condition2'yi sağlamayanları döndürür		
 
 	SELECT * FROM tableName WHERE columnName IS NULL
@@ -458,13 +648,29 @@ DROP TABLE tableName;
 		-- 'p' ile başlayıp da 'm' ile bitenleri döndürür ancak '_' karakteri aradaki karakter sayısını belirtir
 		-- örneğin 'pim' diye bir kayıt varsa döndürür
 		-- p___m yazılsaydı eğer, 'piiim' kaydını döndürürdü
+
+	SELECT * FROM tableName WHERE columnName LIKE '_% _% _%'
+		-- 3 kelimeli olanları döndürür
 ** LIKE **
 
+** REGEXP **
+	SELECT columnName FROM tableName WHERE columName REGEXP '^ers'
+		-- 'ers' ile başlayanları döndürür
+
+	SELECT columnName FROM tableName WHERE columName REGEXP 'ers$'
+		-- 'ers' ile bitenleri döndürür
+
+	SELECT columnName FROM tableName WHERE columName REGEXP 'ers'
+		-- içinde 'ers' bulunanları döndürür
+** REGEXP **
+
 ** IN **
+	-- HER ZAMAN JOIN YERİNE IN ANAHTAR SÖZCÜĞÜNÜ KULLANABİLİYORSAN ONU KULLAN
+	
 	SELECT * FROM tableName WHERE birinciKüme IN ikinciKüme
 		-- eğer birinciKüme, ikinciKüme'nin alt kümesi olan satırları döndürür
 
-	SELECT columName1, columnName2, ... FROM tableName WHERE columnName IN ('data1', 'data2', ...);
+	SELECT columName1, columnName2, ... FROM tableName WHERE columnName IN ('data1', 'data2', ...)
 		-- IN komutundan sonra yazılan kümenin herhangi bir elemanına eşit olan satırları döndürür
 		-- OR kullanımı ile aynı
 		-- WHERE columnName = 'data1' OR 'data2' OR ...
@@ -477,6 +683,8 @@ DROP TABLE tableName;
 
 	SELECT columName1, columnName2, ... FROM tableName WHERE id NOT IN (1, 2)
 		-- id'si 1 veya 2 olmayanları döndürür
+
+	-- DELETE ifadesi ile birlikte de kullanılabilir
 ** IN **
 
 ** LIMIT ** 
@@ -490,34 +698,36 @@ DROP TABLE tableName;
 		-- alt sınır dahil, üst sınır dahil olmamak üzere satırları indis numarasına göre döndürür
 		-- örneğin, 0, 1, 2, 3, 4. indise sahip satırları döndürür
 
-	SELECT columName1, columnName2, ... FROM tableName WHERE condition LIMIT 1;
+	SELECT columName1, columnName2, ... FROM tableName WHERE condition LIMIT 1
 ** LIMIT ** 
 
 ** ORDER BY **
-	SELECT * FROM tableName ORDER BY columnName;
+	SELECT * FROM tableName ORDER BY columnName
 		-- columnName'e göre sıralı bir şekilde verileri döndürür
 		-- string'leri de sıralar
 
-	SELECT * FROM tableName ORDER BY columnName1 ASC, columnName2 DESC;
+	SELECT * FROM tableName ORDER BY columnName1 ASC, columnName2 DESC
 		-- önce columnName1'e göre sıralar eğer, columnName1'deki veriler eşitse columnName2'ye göre sıralar
 
-	SELECT * FROM tableName ORDER BY FIELD (columnName, data1, data2, data3);
+	SELECT * FROM tableName ORDER BY FIELD (columnName, data1, data2, data3)
 		-- data1 = 10 için, columnName'i 10 olan veriler önce döndürülür
 
-	SELECT satışFiyatı * adet AS sermaye FROM tableName ORDER BY sermaye DESC;
+	SELECT satışFiyatı * adet AS sermaye FROM tableName ORDER BY sermaye DESC
 		-- satışFiyatı ve adet'i çarpıp, sermayeyi hesaplar ve sermayeye göre büyükten küçüğe olacak şekilde döndürür
 
 	SELECT columName1, columnName2, ... FROM tableName WHERE condition ORDER BY columnName XXX LIMIT 3
 		-- XXX > ASC (artan) | DESC (azalan) - default olarak ASC'dir	
 ** ORDER BY **
 
-** JOIN**
-	SELECT * FROM tableName1, tableName2
-		-- iki tablonun kartezyen çarpımını döndürür (join)
+** JOIN **
+	-- HER ZAMAN JOIN YERİNE IN ANAHTAR SÖZCÜĞÜNÜ KULLANABİLİYORSAN ONU KULLAN
+
+	SELECT * FROM tableName1, tableName2 = SELECT * FROM City CROSS JOIN Country
+		-- iki tablonun kartezyen çarpımını döndürür (cross join olarak geçer)
 		-- ilk önce birinci tablonun ilk satırı ile ikinci tablonun tüm satırlarını tek tek döndürür
 		-- birinci tablonun tüm satırları için aynı işlem tekrarlanır
 
-	SELECT * FROM tableName1, tableName2 WHERE tableName1.id = tableName2.id;
+	SELECT * FROM tableName1, tableName2 WHERE tableName1.id = tableName2.id
 		-- INNER JOIN olarak geçer
 		-- 2 tabloyu tek bir tabloymuş gibi döndürür
 		-- yani iki tablodaki tüm sütunları eklediği bir tablo gibi olur
@@ -525,6 +735,7 @@ DROP TABLE tableName;
 
 	SELECT * FROM tableName1 INNER JOIN tableName2 ON tableName1.id = tableName2.id
 		-- yukarıdaki cümle ile aynıdır
+		-- sonuna WHERE de eklenebilir
 
 	SELECT tableName1.* FROM tableName1 INNER JOIN tableName2 ON tableName1.id = tableName2.id
 		-- sadece tableName1'deki kısıtı sağlayan satırları döndürür
@@ -536,6 +747,7 @@ DROP TABLE tableName;
 		-- tek bir tabloymuş gibi döndürür
 		-- RIGHT JOIN yazılmış olsaydı ise, sağdaki tablonun tüm satırlarını döndürürdü ancak soldaki tablonun 
 		-- yalnızca eşleşen satırlarını döndürürdü
+		-- YANİ LEFT JOIN'DE SOLDAKİ TABLODAKİ NULL DEĞERLER DÖNMÜYOR, RIGHT JOIN'DE SAĞDAKİ TABLODAN NULL DEĞERLER DÖNMÜYOR
 
 	SELECT * FROM tableName1 AS t1 LEFT JOIN tableName2 AS t2 ON t1.parentId = t2.id 
 	WHERE t1.specificColumnName = data
@@ -551,11 +763,20 @@ DROP TABLE tableName;
 		-- FULL OUTER JOIN olarak geçer
 		-- UNION komutu iki kümenin birleşimini döndürür, kümede tekrarlı eleman olmaz, her satır 1 kez döndürülür
 		-- iki tablodaki eşleşen tüm satırlar ve iki tablodaki eşleşmeyen tüm satırlar döndürülür
+
+	SELECT * FROM tableName1 FULL OUTER JOIN tableName2 ON tableName1.parentId = tableName2.id WHERE condition
+		-- yukardakinin aynısı
+		-- default olarak FULL seçili
 ** JOIN **
 
 ** GROUP BY **
-	-- belirtilen sütuna göre gruplar ve her gruptaki veriler için aggregate fonksiyonlar
-	-- çalıştırma imkanı verir
+	-- belirtilen sütuna göre gruplar ve her gruptaki veriler için aggregate fonksiyonlar çalıştırma imkanı verir
+	-- if any aggregation is used then SELECT list must be either:
+	-- 1. aggregated
+	-- 2. an attribute on the GROUP BY list
+	-- çünkü gruplandırdıktan sonra seçme yapıyor ama TEK BİR SATIR DÖNDÜRECEK
+	-- mesela SELECT COUNT(id) dersen, en sondaki -having'ten sonra- gruplanmış satırların id'lerini toplar döndürür
+	-- SELECT Count(DISTINCT name) dersen, en sondaki -having'ten sonra- gruplanmış satırlardaki unique name sayısını döndürür
 
 	SELECT * FROM tableName GROUP BY columnName
 		-- columnName'de tekrarlı kayıt varsa yalnızca birisini döndürür
@@ -571,6 +792,9 @@ DROP TABLE tableName;
 		-- columnName'i aynı olan satırların id'sini toplar, bir satır olarak döndürür
 		-- diğer satırların ise yalnızca id'sini döndürür
 
+	SELECT SUM(id) FROM tableName GROUP BY columnName1, columnName2
+		-- önce columnName1'e sonra columnName2'ye göre gruplar
+
 	SELECT *, SUM(id) AS total FROM tableName GROUP BY columnName
 		-- columnName'i aynı olan satırlardan yalnızca birisini döndürür ve total sütununda
 		-- bu aynı satırların id'lerinin toplamı yazar
@@ -578,25 +802,32 @@ DROP TABLE tableName;
 ** GROUP BY **	
 
 ** HAVING **
-	SELECT SUM(id) AS total FROM tableName GROUP BY columnName HAVING total > 3
+	SELECT SUM(id) AS total FROM tableName WHERE condition GROUP BY columnName HAVING total > 3
 		-- columnName'i aynı olan satırlardan yalnızca birisini döndürür ve total sütununda
 		-- bu aynı satırların id'lerinin toplamı yazar
 		-- diğer satırların ise yalnızca id'sini döndürür
 		-- tüm bunlara ek olarak total'i 3'ten büyük olanları döndürür
 
-	SELECT SUM(id) AS total FROM tableName GROUP BY columnName HAVING total BETWEEN 3 AND 6
+	SELECT SUM(id) AS total FROM tableName WHERE condition GROUP BY columnName HAVING total BETWEEN 3 AND 6
 		-- columnName column'u için id'leri toplamı 3 ile 6 dahil olmak üzere 3 ile 6 arasındakileri döndürür
 		-- diğer column'lar için ise id'si 3 ile 6 dahil olmak üzere 3 ile 6 arasındakileri döndürür
 
 	-- ... HAVING condition
 	-- GROUP BY'dan sonra WHERE sorgusu yazılamaz ancak HAVING ile bu işlem gerçekleştirilebilir
 	-- yani grupladırdıktan sonra HAVING kısıtı işler
+	-- sanırım HAVING koşuluna uymayan gruplardan dönen satır olmaz- yani grupta koşula uyan satır yoksa grup dönmez?
+
+	-- RESTRICTIONS FOR HAVING
+	-- Outside subqueries, they may refer to attributes only if they are either:
+	-- 1. A grouping attribute, or 
+	-- 2. Aggregated 
+	-- (same condition as for SELECT clauses with aggregation).
 ** HAVING **
 
 ** SUBQUERY, UNION, INTERSECT, EXCEPT, UNIQUE, NOT UNIQUE, WITH **
 	SELECT topicName FROM topics WHERE userId IN (SELECT id FROM users WHERE age > 15)
 		-- topics, users > tablo isimleri
-		-- topicName, userId, topics; id ve age ise users tablosunun sütunları
+		-- topicName, userId, topics id ve age ise users tablosunun sütunları
 		-- kullanıcılar (users), konu(topic) açabiliyor - topic tablosundaki userId FOREIGN KEY
 		-- bu sorgu, yaşı 15'ten büyük olan kullanıcıların açtığı konuların isimlerini döndürür
 		-- SUBQUERY olarak geçer
@@ -606,8 +837,8 @@ DROP TABLE tableName;
 	SELECT id, name FROM tableName2
 	ORDER BY id DESC
 		-- UNION komutu iki kümenin birleşimini döndürür, kümede tekrarlı eleman olmaz, her satır 1 kez döndürülür
-		-- iki tablodaki tüm satırlar, id ve name sütunları ile ALT ALTA - JOIN ile farkı bu -  döndürülür 
-		-- sütun isimleri, ilk tablodaki isimler olur
+		-- tek tablo olarak döndürülür (tableName1 tablosu olarak), sütun isimleri, ilk tablodaki isimler olur
+		-- UNION ALL yazılırsa, tekrarlı satırlar da döndürülür
 
 	SELECT id, name FROM tableName1
 	INTERSECT
@@ -621,48 +852,51 @@ DROP TABLE tableName;
 	ORDER BY id DESC
 		-- fark işlemi yapar
 
-	* EXCEPT ALL kullanımı? anlamadım *
+	* EXCEPT ALL kullanımı?
 	* NOT UNIQUE ve UNIQUE kullanımını araştır *
 	* WITH kullanımını araştır *
 ** SUBQUERY, UNION, INTERSECT, EXCEPT, UNIQUE, NOT UNIQUE, WITH **
 
 ** DEFINED FUNCTIONS **
-	SELECT LAST_INSERT_ID();
+	SELECT LAST_INSERT_ID()
 
-	SELECT MIN(columnName) FROM tableName;
+	SELECT MIN(columnName) FROM tableName
 
-	SELECT MAX(columnName) FROM tableName;
+	SELECT MAX(columnName) FROM tableName
 
-	SELECT COUNT(*) FROM tableName;
+	SELECT COUNT(*) FROM tableName     			  -- tuple sayısını döndürür
+	SELECT COUNT(email) FROM tableName 			  -- email'i null olmayan tuple sayısını döndürür
+	SELECT COUNT(*) - COUNT(email) FROM tableName -- email'i olmayan kullanıcı sayısı
+	SELECT COUNT(DISTINCT columnName) FROM tableName
 
-	SELECT AVG(columnName) FROM tableName;
+	SELECT AVG(columnName) FROM tableName
 		-- verilerin ortalamasını döndürür
 
-	SELECT SUM(columnName) FROM tableName;
+	SELECT SUM(columnName) FROM tableName
 		-- verilerin toplamını döndürür
 
-	SELECT MOD(37, 13);
+	SELECT MOD(37, 13)
 		-- mod alır
 
-	SELECT ABS(-4);	
+	SELECT ABS(-4)	
 		-- mutlak değer alır
 
-	SELECT SIGN(number);
+	SELECT SIGN(number)
 		-- eğer sayı negatif ise -1 döndürür
 		-- eğer sayı pozitif ise 1 döndürür
 		-- eğer sayı sıfır ise 0 döndürür
 
-	SELECT POWER(2, 4);
+	SELECT POWER(2, 4)
 		-- sayının üssünü alır
 
-	SELECT SQRT(16);
+	SELECT SQRT(16)
 		-- karekök alır
 
-	SELECT ROUND(11.7);
+	SELECT ROUND(11.7)
 		-- sayıyı yuvarlar
 		-- 11.5'ten küçükse 11'e, 11.5'ten büyükse 12'ye yuvarlar
 
-	SELECT FLOOR(11.9);
+	SELECT FLOOR(11.9)
 		-- ondalık kısmı atar, yani 11 döndürür
 ** DEFINED FUNCTIONS **
 
@@ -674,21 +908,10 @@ DROP TABLE tableName;
 		ELSE 'Diğer' 
 	END 
 	AS cinsiyet
-	FROM mytable;
+	FROM mytable
 
-	SELECT IF(condition, "true", "false") AS newColumnName;
+	SELECT IF(condition, "true", "false") AS newColumnName
 ** CONDITIONS **
-
-** REGEXP **
-	SELECT columnName FROM tableName WHERE columName REGEXP '^ers'
-		-- 'ers' ile başlayanları döndürür
-
-	SELECT columnName FROM tableName WHERE columName REGEXP 'ers$'
-		-- 'ers' ile bitenleri döndürür
-
-	SELECT columnName FROM tableName WHERE columName REGEXP 'ers'
-		-- içinde 'ers' bulunanları döndürür
-** REGEXP **
 
 ** SOME, ALL, ANY **
 	SELECT * FROM tableName WHERE columName > SOME (küme)
@@ -706,3 +929,15 @@ DROP TABLE tableName;
 	SELECT * FROM tableName WHERE columName > ANY (küme)
 		-- eğer columnName, kümenin içindeki en az bir elemandan daha büyük ise satırı döndürür
 ** SOME, ALL, ANY**
+
+** EXISTS **
+	SELECT * FROM tableName WHERE [NOT] EXISTS(subquery)
+		-- if the subquery returns at least one row, the EXISTS operator returns true, otherwise, it returns false.
+
+	DELETE FROM Beers B WHERE EXISTS (SELECT name FROM Beers WHERE manf = B.manf AND name <> B.name)
+		-- yukardaki sorgu şu anlama geliyor:
+		-- WHERE EXISTS ifadesinden true dönen tuple’ların hepsini sil
+		-- ama önce işaretle hepsini tarayıp, ondan sonra işaretlediklerini sil
+		-- yukarıdaki sorguda, Beers'ın her tuple'ı için, EXISTS içindeki sorgu çalışır
+		-- eğer T dönerse satır silinir yani sorgu en az 1 satır döndürürse
+** EXISTS **

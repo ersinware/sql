@@ -1,9 +1,0 @@
-SUPER KEY:
-	bir veya birden fazla özellik bir araya gelerek bir satırı tanımlarsa, bunlar SUPER KEY olarak adlandırılır
-	örneğin müşterinin adı ve adresi SUPER KEY olabilir, çünkü bu iki özellik o satırı eşsiz yapar
-CANDIDATE KEY:
-	içinde SUPER KEY içermeyen SUPER KEY'dir
-	mesela müşteri adı, yaşı ve adresi SUPER KEY belirtir ancak adı ve adresi de SUPER KEY belirtir, adı ve adresi SUPER KEY olarak belirtilirse CANDIDATE KEY olur
-	PRIMARY KEY de CANDIDATE KEY'dir
-
-resimlere bak
