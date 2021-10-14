@@ -651,6 +651,10 @@ DROP TABLE tableName
 
 	SELECT * FROM tableName WHERE columnName LIKE '_% _% _%'
 		-- 3 kelimeli olanları döndürür
+
+	SELECT Name FROM City WHERE Name LIKE '___ian';  --> 6 karakterli olup sonunda ian olanlar
+	SELECT Name FROM City WHERE Name LIKE '___%ian'; --> en az 6 karakterli olup sonunda ian olanlar
+	SELECT Name FROM City WHERE Name LIKE '%___ian'; --> en az 6 karakterli olup sonunda ian olanlar
 ** LIKE **
 
 ** REGEXP **
